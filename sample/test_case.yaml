@@ -1,0 +1,25 @@
+alert_1:
+  db: test
+  rp: default
+  type: batch
+
+  warn_trigger_test:
+    data_set:
+      - weather,location=us-midwest temperature=80
+      - weather,location=us-midwest temperature=82
+    expects:
+      - warn: temperature>80 
+
+  crit_trigger_test:
+    data_set:
+      - weather,location=us-midwest temperature=80
+      - weather,location=us-midwest temperature=86
+    expects:
+      - crit: temperature>80 
+
+  crit_trigger_test:
+    data_set:
+      - weather,location=us-midwest temperature=88
+      - weather,location=us-midwest temperature=80
+    expects:
+      - ok: temperature>80 
