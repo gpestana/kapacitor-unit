@@ -1,1 +1,17 @@
-this is a tick
+var data = batch 
+	| query('''
+	SELECT temperature
+	FROM weather."default".weather
+	''')
+	.period(1m)
+	.every(1s)
+	.groupBy('location')
+	.fill(0)
+
+data
+	|alert().id('Temperature {{ index .Tags "location" }}')
+		.messsage('Temperature alert')
+		.warn(lambda: "temperature" > 80)
+		.warn(lambda: "temperature" > 84)
+		.stateChangesOnly()
+      	.log('/tmp/temperature.tick.log')
