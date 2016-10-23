@@ -1,0 +1,25 @@
+{
+  "name": "test_manager",
+  "version": "1.0.0",
+  "description": "Test manager for Kapacitor-unit ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "kapacitor",
+    "uni",
+    "test"
+  ],
+  "author": "gpestana",
+  "license": "ISC",
+  "dependencies": {
+    "bunyan": "^1.8.3",
+    "data.either": "^1.4.0",
+    "data.task": "^3.1.1",
+    "js-yaml": "^3.6.1",
+    "ramda": "^0.22.1",
+    "request": "^2.75.0",
+    "underscore": "^1.8.3"
+  }
+}

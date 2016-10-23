@@ -1,0 +1,27 @@
+version: '2'
+services:
+
+  influxdb: 
+    container_name: influxdb
+    image: influxdb:1.0
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+    expose:
+      - "8090"
+      - "8099"
+
+  kapacitor: 
+    container_name: kapacitor
+    build: ./kapacitor
+    ports:
+      - "19092:9092"
+
+  tests: 
+    container_name: test_manager
+    build: ./test_manager
+    volumes: 
+      - ${KAPACITOR_UNIT_TICK_DIRECTORY}:/scripts_dir
+      - ${KAPACITOR_UNIT_TESTS_DEF_DIRECTORY}:/tests_def_dir
+    environment:
+      TESTS_DEF_FILE: ${KAPACITOR_TESTS_DEF}
