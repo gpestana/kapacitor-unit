@@ -10,8 +10,8 @@ var data = batch
 
 data
 	|alert().id('Temperature {{ index .Tags "location" }}')
-		.messsage('Temperature alert')
+		.message('Temperature alert')
 		.warn(lambda: "temperature" > 80)
 		.warn(lambda: "temperature" > 84)
 		.stateChangesOnly()
-      	.log('/tmp/temperature.tick.log')
+    .log('/tmp/temperature.tick.log')

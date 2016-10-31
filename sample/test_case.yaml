@@ -1,6 +1,9 @@
 alert_1:
-  db: weather
-  rp: default
+
+  id: alert_1
+  dbrps:
+    - db: weather
+    - rp: default
   type: batch
 
   warn_trigger_test:
@@ -17,9 +20,13 @@ alert_1:
     expects:
       - crit: temperature>84
 
+
 alert_2:
-  db: weather
-  rp: default
+
+  id: alert_2
+  dbrps:
+    - db: weather
+    - rp: default
   type: batch
 
   warn_trigger_test:

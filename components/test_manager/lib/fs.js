@@ -22,7 +22,7 @@ const load_test_data = () => {
         const script = load_script(key).getOrElse({});
         tests_def[key].script = script;
       });
-      return tests_def;
+      return Right(tests_def);
     });
 }
 

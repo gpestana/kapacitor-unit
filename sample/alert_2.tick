@@ -1,1 +1,1 @@
-this is a tick_2
+stream|from().measurement('cpu')
