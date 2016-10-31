@@ -5,7 +5,8 @@ Kapacitor-unit is a framework perform sane unit tests for TICK scripts. Kapacito
 ### Running kapacitor-unit:
 
 1) `git clone github.com/gpestana/kapacitor-unit`
-2) `./kapacitor-unit/bin/kapacitor-unit --tick-dir <*.tick directory> --tests <test cases definition> --output <file> [optional]
+
+2) `./kapacitor-unit/bin/kapacitor-unit --tick-dir <*.tick directory> --tests <test cases definition> --output <file> [optional]`
 
 ### Test case definition:
 
