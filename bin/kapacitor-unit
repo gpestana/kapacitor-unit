@@ -44,7 +44,7 @@ if [ ! -f "$TEST_DEF_FILE" ]; then
 	exit 1
 fi
 
-# Defines environment variables for volume definition in docker-compose 
+# Defines environment variables for volume definition in docker-compose NOT WOKRING!
 export KAPACITOR_UNIT_TICK_DIRECTORY=$TICK_DIRECTORY
 export KAPACITOR_UNIT_TESTS_DEF_DIRECTORY=$(dirname "${TEST_DEF_FILE}")
 export KAPACITOR_TESTS_DEF=$(basename "${TEST_DEF_FILE}")
