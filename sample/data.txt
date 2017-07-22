@@ -1,0 +1,1 @@
+cpu usage_idle=1

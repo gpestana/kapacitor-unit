@@ -2,12 +2,16 @@ package cli
 
 import (
 	"flag"
+	"log"
 )
 
 type Config struct {
+	//Path for test definitions YAML file
+	TestsPath string
+	// Path for directory where TICKscripts are
+	ScriptsDir    string
 	InfluxdbHost  string
 	KapacitorHost string
-	ScriptsDir    string
 }
 
 func Load() *Config {
@@ -15,11 +19,20 @@ func Load() *Config {
 		"InfluxDB host")
 	kapacitorHost := flag.String("kapacitor", "http://localhost:9092",
 		"Kapacitor host")
-	scriptsDir := flag.String("dir", "", "TICKscripts directory [optional]")
+	testsPath := flag.String("tests", "", "Tests definition file")
+	scriptsDir := flag.String("dir", "", "TICKscripts directory")
 
 	flag.Parse()
 
-	config := Config{*influxdbHost, *kapacitorHost, *scriptsDir}
+	if *testsPath == "" {
+		log.Fatal("ERROR: Path for tests definitons (--tests) must be defined")
+	}
+
+	if *scriptsDir == "" {
+		log.Fatal("ERROR: Path for where TICKscipts directory (--dir) must be defined")
+	}
+
+	config := Config{*testsPath, *scriptsDir, *influxdbHost, *kapacitorHost}
 
 	return &config
 }
