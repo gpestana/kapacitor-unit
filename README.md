@@ -1,6 +1,6 @@
 # Kapacitor-unit
 
-## A test framework for TICKscripts
+**A test framework for TICKscripts**
 
 
 **Note**: kapacitor-unit is still work in progress. Contributions and ideas
