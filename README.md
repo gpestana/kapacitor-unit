@@ -7,7 +7,7 @@
 are more then welcome!
 
 Read more about the idea and motivation behind kapacitor-unit in 
-[this blog post](/Users/home/dev/blog/public/post/kapacitor-unit/index.html)
+[this blog post](http://www.gpestana.com/blog/post/kapacitor-unit/)
 
 
 *DRAFT*
