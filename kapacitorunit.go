@@ -6,6 +6,7 @@ import (
 	"github.com/gpestana/kapacitor-unit/cli"
 	"github.com/gpestana/kapacitor-unit/io"
 	"github.com/gpestana/kapacitor-unit/task"
+	"github.com/gpestana/kapacitor-unit/test"
 )
 
 func main() {
@@ -13,7 +14,10 @@ func main() {
 
 	kapacitor := io.Kapacitor{config.KapacitorHost}
 
-	task := task.Task{config.ScriptsDir}
+	task := task.Task{
+		Path:  config.ScriptsDir,
+		Tests: make([]test.Test, 1)}
+
 	fmt.Println(kapacitor.List())
-	fmt.Println(task.Load())
+	task.RunTests()
 }
