@@ -4,6 +4,7 @@ package task
 import (
 	"fmt"
 	"github.com/gpestana/kapacitor-unit/test"
+	"io/ioutil"
 	"log"
 	"strings"
 )
@@ -14,6 +15,25 @@ type Task struct {
 	Path   string
 	Script string
 	Tests  []test.Test
+}
+
+// Task constructor
+func New(n string, p string, t []test.Test) (*Task, error) {
+	task := Task{
+		Name:  n,
+		Path:  p,
+		Tests: t}
+
+	if !strings.HasSuffix(p, "/") {
+		p = p + "/"
+	}
+
+	s, err := ioutil.ReadFile(p + n)
+	if err != nil {
+		return nil, err
+	}
+	task.Script = string(s[:])
+	return &task, nil
 }
 
 // Goes through all task's tests and run them

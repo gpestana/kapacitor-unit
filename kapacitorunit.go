@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gpestana/kapacitor-unit/cli"
 	"github.com/gpestana/kapacitor-unit/io"
@@ -14,10 +15,11 @@ func main() {
 
 	kapacitor := io.Kapacitor{config.KapacitorHost}
 
-	task := task.Task{
-		Path:  config.ScriptsDir,
-		Tests: make([]test.Test, 1)}
+	task, err := task.New("LICENSE", config.ScriptsDir, make([]test.Test, 1))
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	fmt.Println(task)
 	fmt.Println(kapacitor.List())
-	task.RunTests()
 }
