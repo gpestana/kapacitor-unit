@@ -8,6 +8,8 @@ import (
 	"github.com/gpestana/kapacitor-unit/io"
 	"github.com/gpestana/kapacitor-unit/task"
 	"github.com/gpestana/kapacitor-unit/test"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 )
 
 func main() {
@@ -22,4 +24,18 @@ func main() {
 
 	fmt.Println(task)
 	fmt.Println(kapacitor.List())
+}
+
+//Opens and parses test configuration file into a map
+func testConfig(p string) (map[string]string, error) {
+	c, err := ioutil.ReadFile(p)
+	if err != nil {
+		return nil, err
+	}
+	cmap := make(map[string]string)
+	err = yaml.Unmarshal([]byte(c), &cmap)
+	if err != nil {
+		return nil, err
+	}
+	return cmap, nil
 }
