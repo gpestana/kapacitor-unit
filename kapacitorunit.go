@@ -12,6 +12,15 @@ import (
 	"io/ioutil"
 )
 
+//Structure that holds test configuration file
+type C struct {
+	Tests []struct {
+		Name    string
+		Expects string
+		Data    []string
+	}
+}
+
 func main() {
 	config := cli.Load()
 
@@ -27,15 +36,15 @@ func main() {
 }
 
 //Opens and parses test configuration file into a map
-func testConfig(p string) (map[string]string, error) {
+func testConfig(p string) (*C, error) {
 	c, err := ioutil.ReadFile(p)
 	if err != nil {
 		return nil, err
 	}
-	cmap := make(map[string]string)
+	cmap := C{}
 	err = yaml.Unmarshal([]byte(c), &cmap)
 	if err != nil {
-		return nil, err
+		return &cmap, err
 	}
-	return cmap, nil
+	return &cmap, nil
 }
