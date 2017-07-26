@@ -22,11 +22,16 @@ type C struct {
 }
 
 func main() {
-	config := cli.Load()
+	f := cli.Load()
+	kapacitor := io.Kapacitor{f.KapacitorHost}
 
-	kapacitor := io.Kapacitor{config.KapacitorHost}
+	c, err := testConfig(f.TestsPath)
+	if err != nil {
+		log.Fatal("Test configuration parse failed")
+	}
+	fmt.Println(c)
 
-	task, err := task.New("LICENSE", config.ScriptsDir, make([]test.Test, 1))
+	task, err := task.New("LICENSE", f.ScriptsDir, make([]test.Test, 1))
 	if err != nil {
 		log.Fatal(err)
 	}
