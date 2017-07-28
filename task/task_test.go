@@ -1,7 +1,6 @@
 package task
 
 import (
-	"github.com/gpestana/kapacitor-unit/test"
 	"runtime"
 	"strings"
 	"testing"
@@ -14,7 +13,7 @@ func TestConstructorOk(t *testing.T) {
 	n := sf[len(sf)-1:][0]
 	p := strings.Join(sf[:len(sf)-1], "/")
 
-	task, err := New(n, p, make([]test.Test, 1))
+	task, err := New(n, p)
 	if err != nil {
 		t.Error(err)
 	}
@@ -28,7 +27,7 @@ func TestConstructorOk(t *testing.T) {
 }
 
 func TestConstructorWrongFile(t *testing.T) {
-	task, err := New(".", "not_exists.file", make([]test.Test, 1))
+	task, err := New(".", "not_exists.file")
 	if task != nil {
 		t.Error("File does not exist, so Task returned should be nil")
 	}

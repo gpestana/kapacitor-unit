@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+//Helper function to create an YAML configuration file to be used in the tests
 func createConfFile(p string, conf string) {
 	f, err := os.Create(p)
 	if err != nil {
@@ -23,12 +24,16 @@ func TestConfigValidYAML(t *testing.T) {
 	c := `
 tests:
  - name: test2
+   db: test
+   rp: default
    expects: warning
    data:
     - data 1
     - data 2
 
  - name: test1
+   db: test
+   rp: default
    data: 
     - example of data
    expects: critical
@@ -69,5 +74,42 @@ func TestConfigLoadWrongPath(t *testing.T) {
 	_, err := testConfig("err")
 	if err == nil {
 		t.Error("Wrong path shuld return error")
+	}
+}
+
+func TestInitTests(t *testing.T) {
+	p := "./conf.yaml"
+	c := `
+tests:
+ - name: alert_2.tick
+   db: test
+   rp: default
+   expects: warning
+   data:
+    - data 1
+    - data 2
+
+ - name: alert_2.tick
+   db: test
+   rp: default
+   data: 
+    - example of data
+   expects: critical
+`
+
+	defer os.Remove(p)
+	createConfFile(p, c)
+	cmap, err := testConfig(p)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = initTests(cmap, "./sample/")
+	if err != nil {
+		t.Error(err)
+	}
+
+	if cmap.Tests[0].Task.Name != "alert_2.tick" {
+		t.Error(cmap.Tests[0].Task.Name)
 	}
 }

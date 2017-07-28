@@ -5,15 +5,19 @@ package test
 
 import (
 	"fmt"
+	"github.com/gpestana/kapacitor-unit/task"
 	"log"
 )
 
 type Test struct {
-	data            string
-	expect          string
-	result          string
-	database        string
-	retentionPolicy string
+	Name    string
+	Data    []string
+	Expects string
+	Result  string
+	Db      string
+	Rp      string
+	Type    string
+	Task    task.Task
 }
 
 // Method exposed to start the test. It sets up the test, adds the test data,
@@ -66,6 +70,6 @@ func (t *Test) teardown() error {
 // Fetches status of kapacitor task and saves it to test.Test struct
 func (t *Test) results() error {
 	r := "results"
-	t.result = r
+	t.Result = r
 	return nil
 }

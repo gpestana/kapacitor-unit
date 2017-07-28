@@ -2,10 +2,7 @@
 package task
 
 import (
-	"fmt"
-	"github.com/gpestana/kapacitor-unit/test"
 	"io/ioutil"
-	"log"
 	"strings"
 )
 
@@ -14,15 +11,13 @@ type Task struct {
 	Name   string
 	Path   string
 	Script string
-	Tests  []test.Test
 }
 
 // Task constructor
-func New(n string, p string, t []test.Test) (*Task, error) {
+func New(n string, p string) (*Task, error) {
 	task := Task{
-		Name:  n,
-		Path:  p,
-		Tests: t}
+		Name: n,
+		Path: p}
 
 	if !strings.HasSuffix(p, "/") {
 		p = p + "/"
@@ -34,22 +29,4 @@ func New(n string, p string, t []test.Test) (*Task, error) {
 	}
 	task.Script = string(s[:])
 	return &task, nil
-}
-
-// Goes through all task's tests and run them
-func (t *Task) RunTests() {
-	for _, test := range t.Tests {
-		err := test.Run()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-}
-
-func (t *Task) String() string {
-	r := make([]string, len(t.Tests))
-	for i, test := range t.Tests {
-		r[i] = test.String()
-	}
-	return fmt.Sprintf(strings.Join(r, "\n"))
 }

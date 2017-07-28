@@ -14,11 +14,7 @@ import (
 
 //Structure that holds test configuration file
 type C struct {
-	Tests []struct {
-		Name    string
-		Expects string
-		Data    []string
-	}
+	Tests []test.Test
 }
 
 func main() {
@@ -29,18 +25,16 @@ func main() {
 	if err != nil {
 		log.Fatal("Test configuration parse failed")
 	}
-	fmt.Println(c)
 
-	task, err := task.New("LICENSE", f.ScriptsDir, make([]test.Test, 1))
+	err = initTests(c, f.ScriptsDir)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Init Tests failed: %s", err)
 	}
 
-	fmt.Println(task)
 	fmt.Println(kapacitor.List())
 }
 
-//Opens and parses test configuration file into a map
+//Opens and parses test configuration file into a structure
 func testConfig(p string) (*C, error) {
 	c, err := ioutil.ReadFile(p)
 	if err != nil {
@@ -52,4 +46,16 @@ func testConfig(p string) (*C, error) {
 		return &cmap, err
 	}
 	return &cmap, nil
+}
+
+//Populates each of Test in Configuration struct with an initialized Task
+func initTests(c *C, p string) error {
+	for i, t := range c.Tests {
+		tk, err := task.New(t.Name, p)
+		if err != nil {
+			return err
+		}
+		c.Tests[i].Task = *tk
+	}
+	return nil
 }

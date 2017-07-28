@@ -1,44 +1,24 @@
-alert_1:
+tests:
 
-  id: alert_1
-  dbrps:
-    - db: weather
-    - rp: default
-  type: batch
+  # alert_weather.tick triggers a critical alert when the measurement 
+  # temperature in the dbrp weather:default is bigger than 80
+  - name: alert_weather.tick
+    db: weather
+    rp: default
+    type: stream
+    data:
+      - weather,location=us-midwest temperature=70
+      - weather,location=us-midwest temperature=100
+    expects: critical
 
-  warn_trigger_test:
-    data_set:
-      - weather,location=us-midwest temperature=80
+  # alert_weather.tick triggers a warning alert when the measurement temperature 
+  # in the dbrp weather:default is bigger than 80
+  - name: alert_weather.tick
+    db: weather
+    rp: default
+    type: stream
+    data:
+      - weather,location=us-midwest temperature=70
       - weather,location=us-midwest temperature=82
-    expects:
-      - warn: temperature>80 
+    expects: warning
 
-  crit_trigger_test:
-    data_set:
-      - weather,location=us-midwest temperature=80
-      - weather,location=us-midwest temperature=86
-    expects:
-      - crit: temperature>84
-
-
-alert_2:
-
-  id: alert_2
-  dbrps:
-    - db: weather
-    - rp: default
-  type: batch
-
-  warn_trigger_test:
-    data_set:
-      - weather,location=us-midwest temperature=80
-      - weather,location=us-midwest temperature=82
-    expects:
-      - warn: temperature>80 
-
-  crit_trigger_test:
-    data_set:
-      - weather,location=us-midwest temperature=80
-      - weather,location=us-midwest temperature=86
-    expects:
-      - crit: temperature>84
