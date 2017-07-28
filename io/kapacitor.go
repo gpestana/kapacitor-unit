@@ -3,7 +3,6 @@ package io
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -19,17 +18,17 @@ type Kapacitor struct {
 }
 
 // Returns a list of loaded tasks
-func (k Kapacitor) List() []string {
+func (k Kapacitor) List() ([]string, error) {
 	r, err := http.Get(k.Address + tasks)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	b, _ := ioutil.ReadAll(r.Body)
 	var f map[string][]string
 	err = json.Unmarshal(b, &f)
 
-	return f["tasks"]
+	return f["tasks"], nil
 }
 
 // Loads a task. The task is a

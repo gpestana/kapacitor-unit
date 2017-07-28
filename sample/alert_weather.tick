@@ -1,0 +1,15 @@
+var data = batch 
+	| query('''
+	SELECT temperature
+	FROM weather."default".weather
+	''')
+	.period(1m)
+	.every(1s)
+
+data
+	|alert().id('Temperature {{ index .Tags "location" }}')
+		.message('Temperature alert')
+		.warn(lambda: "temperature" > 80)
+		.warn(lambda: "temperature" > 84)
+		.stateChangesOnly()
+    .log('/tmp/temperature.tick.log')
