@@ -2,12 +2,16 @@
 
 **A test framework for TICKscripts**
 
+Kapacitor-unit is a testing framework to make TICK scripts testing easy and
+automated. Test your tasks using pre defined data points and expected results
+and/or the recording and replay native features.
 
-**Note**: kapacitor-unit is still work in progress. Contributions and ideas
-are more then welcome!
 
 Read more about the idea and motivation behind kapacitor-unit in 
 [this blog post](http://www.gpestana.com/blog/post/kapacitor-unit/)
+
+**Note**: kapacitor-unit is still work in progress. Contributions and ideas
+are more then welcome!
 
 
 *DRAFT*
@@ -31,42 +35,44 @@ kapacitor-unit --dir <*.tick directory> --kapacitor <kapacitor host> --tests <te
 
 ### Test case definition:
 
-The test cases are defined in YAML format. Each test case is defined as YAML 
-mapping and it must define the data set and the expected results after kapacitor
-had ran the tick script against the data set. The data set for each test case 
-is defined in the Influx Line Protocol syntax.
-The test case name must match the tick script that it is suppose to test.
-
-Example:
-
 ```yaml
 
 # Test case for alert_weather.tick
-alert_weather:
+tests:
+  
+   # This is the configuration for a test case. The 'name' must be unique in the
+   # same test configuration. 'description' is optional
 
-  warn_trigger_test: ## Name of the test case, for report purposes
-    data_set:
+  - name: Alert weather:: warning
+    description: Task should trigger Warning when temperature raises about 80 
+
+    # 'task_script' defines the name of the file of the tick script to be loaded
+    # when running the test
+    task_script: alert_weather.tick
+
+    db: weather
+    rp: default 
+
+     # 'data' is an array of data in the line protocol
+    data:
+      - weather,location=us-midwest temperature=75
+      - weather,location=us-midwest temperature=82
+
+    # Alert that should be triggered by Kapacitor when test data is running 
+    # against the task
+    expects: warning
+
+
+  - name: Alert no. 2
+    task_id: alert_weather.tick
+    db: weather
+    rp: default 
+    data:
       - weather,location=us-midwest temperature=80
       - weather,location=us-midwest temperature=82
-    expects:
-      - warn: temperature>80 
+    expects: warning
 
-  crit_trigger_test:
-    data_set:
-      - weather,location=us-midwest temperature=80
-      - weather,location=us-midwest temperature=86
-    expects:
-      - crit: temperature>80 
-
-  crit_trigger_test:
-    data_set:
-      - weather,location=us-midwest temperature=88
-      - weather,location=us-midwest temperature=80
-    expects:
-      - ok: temperature>80 
 ```  
-
-
 
 ### Contributions:
 
