@@ -5,8 +5,9 @@ package test
 
 import (
 	"fmt"
+	"github.com/golang/glog"
+	"github.com/gpestana/kapacitor-unit/io"
 	"github.com/gpestana/kapacitor-unit/task"
-	"log"
 )
 
 type Test struct {
@@ -23,33 +24,33 @@ type Test struct {
 // Method exposed to start the test. It sets up the test, adds the test data,
 // fetches the triggered alerts and saves it. It also removes all artifacts
 // (database, retention policy) created for the test.
-func (t *Test) Run() error {
+func (t *Test) Run(k io.Kapacitor) error {
 
-	err := t.setup()
+	err := t.setup(k)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	err = t.addData()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	err = t.results()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	err = t.teardown()
+	err = t.teardown(k)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	return err
+	return nil
 }
 
-func (t *Test) String() string {
-	return fmt.Sprintf("Result: OK")
+func (t Test) String() string {
+	return fmt.Sprintf(t.Result)
 }
 
 // Adds test data
@@ -58,18 +59,36 @@ func (t *Test) addData() error {
 }
 
 // Creates all necessary artifacts in database to run the test
-func (t *Test) setup() error {
+func (t *Test) setup(k io.Kapacitor) error {
+	glog.Info("Setup test:: ", t.Name)
+	f := map[string]interface{}{
+		"id":     t.Name,
+		"type":   t.Type,
+		"dbrps":  []map[string]string{{"db": t.Db, "rp": t.Rp}},
+		"script": t.Task.Script,
+		"status": "enabled",
+	}
+
+	err := k.Load(f)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // Deletes data, database and retention policies created to run the test
-func (t *Test) teardown() error {
+func (t *Test) teardown(k io.Kapacitor) error {
+	glog.Info("Teardown test:: ", t.Name)
+	err := k.Delete(t.Name)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // Fetches status of kapacitor task and saves it to test.Test struct
 func (t *Test) results() error {
-	r := "results"
+	r := "NaN"
 	t.Result = r
 	return nil
 }

@@ -1,15 +1,13 @@
-var data = batch 
-	| query('''
-	SELECT temperature
-	FROM weather."default".weather
-	''')
-	.period(1m)
-	.every(1s)
+var data = stream 
+	| from()
+		.database('weather')
+		.retentionPolicy('default')
+		.measurement('temperature')
 
 data
-	|alert().id('Temperature {{ index .Tags "location" }}')
+	|alert().id('Temperature')
 		.message('Temperature alert')
 		.warn(lambda: "temperature" > 80)
-		.warn(lambda: "temperature" > 84)
+		.crit(lambda: "temperature" > 100)
 		.stateChangesOnly()
     .log('/tmp/temperature.tick.log')
