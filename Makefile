@@ -1,5 +1,6 @@
 tests:
-	 go test -cover ./...
+	go get .
+	go test -cover ./...
 	
 start-kapacitor:
 	docker-compose -f infra/docker-compose.yml up -d
