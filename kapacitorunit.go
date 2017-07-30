@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"log"
-
 	"github.com/gpestana/kapacitor-unit/cli"
 	"github.com/gpestana/kapacitor-unit/io"
 	"github.com/gpestana/kapacitor-unit/task"
 	"github.com/gpestana/kapacitor-unit/test"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 )
 
 //Structure that holds test configuration file
@@ -19,7 +17,7 @@ type C struct {
 
 func main() {
 	f := cli.Load()
-	kapacitor := io.Kapacitor{f.KapacitorHost}
+	kp := io.NewK(f.KapacitorHost)
 
 	c, err := testConfig(f.TestsPath)
 	if err != nil {
@@ -31,7 +29,11 @@ func main() {
 		log.Fatal("Init Tests failed: %s", err)
 	}
 
-	fmt.Println(kapacitor.List())
+	//Run tests in series and print results
+	for _, t := range c.Tests {
+		t.Run(kp)
+		log.Println(t)
+	}
 }
 
 //Opens and parses test configuration file into a structure
