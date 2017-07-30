@@ -2,6 +2,8 @@
 
 **A test framework for TICKscripts**
 
+[![Build Status](https://travis-ci.org/gpestana/kapacitor-unit.svg?branch=master)](https://travis-ci.org/gpestana/kapacitor-unit)
+
 Kapacitor-unit is a testing framework to make TICK scripts testing easy and
 automated. Test your tasks using pre defined data points and expected results
 and/or the recording and replay native features.
