@@ -16,8 +16,6 @@ Read more about the idea and motivation behind kapacitor-unit in
 are more then welcome!
 
 
-*DRAFT*
-
 ### Running kapacitor-unit:
 
 
