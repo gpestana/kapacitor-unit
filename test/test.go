@@ -31,12 +31,12 @@ func (t *Test) Run(k io.Kapacitor) error {
 		return err
 	}
 
-	err = t.addData()
+	err = t.addData(k)
 	if err != nil {
 		return err
 	}
 
-	err = t.results()
+	err = t.results(k)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,11 @@ func (t Test) String() string {
 }
 
 // Adds test data
-func (t *Test) addData() error {
+func (t *Test) addData(k io.Kapacitor) error {
+	err := k.Data(t.Data, t.Db, t.Rp)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -87,8 +91,12 @@ func (t *Test) teardown(k io.Kapacitor) error {
 }
 
 // Fetches status of kapacitor task and saves it to test.Test struct
-func (t *Test) results() error {
-	r := "NaN"
-	t.Result = r
+func (t *Test) results(k io.Kapacitor) error {
+	st, err := k.Status(t.Task.Name)
+	if err != nil {
+		return err
+	}
+
+	glog.Info(st)
 	return nil
 }

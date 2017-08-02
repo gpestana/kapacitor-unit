@@ -31,7 +31,11 @@ func main() {
 
 	//Run tests in series and print results
 	for _, t := range c.Tests {
-		t.Run(kp)
+		err := t.Run(kp)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		log.Println(t)
 	}
 }
