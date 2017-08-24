@@ -60,7 +60,10 @@ tests:
 
     # Alert that should be triggered by Kapacitor when test data is running 
     # against the task
-    expects: warning
+    expects:
+      ok: 0
+      warn: 1
+      crit: 0
 
 
   - name: Alert no. 2
@@ -70,7 +73,10 @@ tests:
     data:
       - weather,location=us-midwest temperature=80
       - weather,location=us-midwest temperature=82
-    expects: warning
+    expects:
+      ok: 0
+      warn: 1
+      crit: 0
 
 ```  
 

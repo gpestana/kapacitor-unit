@@ -26,7 +26,10 @@ tests:
  - name: test2
    db: test
    rp: default
-   expects: warning
+   expects: 
+     ok: 0
+     warn: 1
+     crit: 0
    data:
     - data 1
     - data 2
@@ -36,7 +39,10 @@ tests:
    rp: default
    data: 
     - example of data
-   expects: critical
+   expects: 
+     ok: 0
+     warn: 0
+     crit: 1
 `
 	defer os.Remove(p)
 	createConfFile(p, c)
@@ -51,9 +57,9 @@ tests:
 	if cmap.Tests[0].Data[1] != "data 2" {
 		t.Error("Data not parsed as expected")
 	}
-	if cmap.Tests[1].Expects != "critical" {
-		t.Error("Expects not parsed as expected")
-	}
+	//if cmap.Tests[1].Expects != "critical" {
+	//	t.Error("Expects not parsed as expected")
+	//}
 
 }
 
@@ -84,7 +90,10 @@ tests:
  - name: alert_2.tick
    db: test
    rp: default
-   expects: warning
+   expects: 
+     ok: 0
+     warn: 1
+     crit: 0
    data:
     - data 1
     - data 2
@@ -94,7 +103,10 @@ tests:
    rp: default
    data: 
     - example of data
-   expects: critical
+   expects: 
+     ok: 0
+     warn: 0
+     crit: 1
 `
 
 	defer os.Remove(p)

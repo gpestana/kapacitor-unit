@@ -15,6 +15,10 @@ const (
 	tasks = "/kapacitor/v1/tasks"
 )
 
+type Status struct {
+	Data map[string]map[string]interface{} `json:"stats"`
+}
+
 // Kapacitor service configurations
 type Kapacitor struct {
 	Host   string
@@ -80,7 +84,7 @@ func (k Kapacitor) Data(data []string, db string, rp string) error {
 }
 
 // Gets task alert status
-func (k Kapacitor) Status(id string) (interface{}, error) {
+func (k Kapacitor) Status(id string) (map[string]int, error) {
 	glog.Info("Fetching status of:: ", id)
 	u := k.Host + tasks + "/" + id
 	res, err := k.Client.Get(u)
@@ -88,12 +92,23 @@ func (k Kapacitor) Status(id string) (interface{}, error) {
 		return nil, err
 	}
 
+	var s Status
 	b, err := ioutil.ReadAll(res.Body)
-	var mp interface{}
-	err = json.Unmarshal(b, &mp)
+	err = json.Unmarshal(b, &s)
 	if err != nil {
 		glog.Info(err)
 	}
 
-	return mp.(map[string]interface{})["stats"], nil
+	sa := s.Data["node-stats"]["alert2"]
+
+	f := make(map[string]int)
+	for k, val := range sa.(map[string]interface{}) {
+		switch v := val.(type) {
+		case float64:
+			f[k] = int(v)
+		default:
+			return nil, errors.New("kapacitor.status: wrong response from service")
+		}
+	}
+	return f, nil
 }

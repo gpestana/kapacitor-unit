@@ -13,8 +13,8 @@ import (
 type Test struct {
 	Name    string
 	Data    []string
-	Expects string
-	Result  string
+	Expects Result
+	Result  Result
 	Db      string
 	Rp      string
 	Type    string
@@ -50,7 +50,7 @@ func (t *Test) Run(k io.Kapacitor) error {
 }
 
 func (t Test) String() string {
-	return fmt.Sprintf(t.Result)
+	return fmt.Sprintf("[TODO] Test.String()")
 }
 
 // Adds test data
@@ -92,11 +92,13 @@ func (t *Test) teardown(k io.Kapacitor) error {
 
 // Fetches status of kapacitor task and saves it to test.Test struct
 func (t *Test) results(k io.Kapacitor) error {
-	st, err := k.Status(t.Task.Name)
+	s, err := k.Status(t.Task.Name)
 	if err != nil {
 		return err
 	}
 
-	glog.Info(st)
+	//t.Result = s
+	glog.Info(s)
+
 	return nil
 }
