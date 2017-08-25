@@ -90,15 +90,18 @@ func (t *Test) teardown(k io.Kapacitor) error {
 	return nil
 }
 
-// Fetches status of kapacitor task and saves it to test.Test struct
+// Fetches status of kapacitor task, compares expected test result with
+// actual test results and saves it to the test.Result struct
 func (t *Test) results(k io.Kapacitor) error {
 	s, err := k.Status(t.Task.Name)
 	if err != nil {
 		return err
 	}
 
-	//t.Result = s
-	glog.Info(s)
+	r := NewResult(s)
+	t.Result = r
+	t.Result.Compare(t.Expects)
 
+	//glog.Info(t.Result)
 	return nil
 }
