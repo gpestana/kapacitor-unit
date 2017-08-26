@@ -2,7 +2,10 @@
 
 **A test framework for TICKscripts**
 
-[![Build Status](https://travis-ci.org/gpestana/kapacitor-unit.svg?branch=master)](https://travis-ci.org/gpestana/kapacitor-unit)
+![Build Status](https://travis-ci.org/gpestana/kapacitor-unit.svg?branch=master)](https://travis-ci.org/gpestana/kapacitor-unit)
+
+![Release Version](https://img.shields.io/badge/release-0.1-blue.svg)
+
 
 Kapacitor-unit is a testing framework to make TICK scripts testing easy and
 automated. Test your tasks using pre defined data points and expected results
@@ -14,6 +17,14 @@ Read more about the idea and motivation behind kapacitor-unit in
 
 **Note**: kapacitor-unit is still work in progress. Contributions and ideas
 are more then welcome!
+
+### Feautures
+
+:heavy_check_mark: Run tests for **stream** TICK scripts using protocol line data input 
+
+:soon: Run tests for **batch** TICK scripts using protocol line data input 
+
+:soon: Run tests for **stream** and **batch** TICK scripts using recordings 
 
 
 ### Running kapacitor-unit:
