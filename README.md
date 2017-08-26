@@ -2,7 +2,7 @@
 
 **A test framework for TICKscripts**
 
-![Build Status](https://travis-ci.org/gpestana/kapacitor-unit.svg?branch=master)](https://travis-ci.org/gpestana/kapacitor-unit)
+[![Build Status](https://travis-ci.org/gpestana/kapacitor-unit.svg?branch=master)](https://travis-ci.org/gpestana/kapacitor-unit)
 
 ![Release Version](https://img.shields.io/badge/release-0.1-blue.svg)
 
@@ -18,7 +18,7 @@ Read more about the idea and motivation behind kapacitor-unit in
 **Note**: kapacitor-unit is still work in progress. Contributions and ideas
 are more then welcome!
 
-### Feautures
+## Features
 
 :heavy_check_mark: Run tests for **stream** TICK scripts using protocol line data input 
 
@@ -27,7 +27,7 @@ are more then welcome!
 :soon: Run tests for **stream** and **batch** TICK scripts using recordings 
 
 
-### Running kapacitor-unit:
+## Running kapacitor-unit:
 
 
 1) Install kapacitor-unit
@@ -91,10 +91,8 @@ tests:
 
 ```  
 
-### Contributions:
+## Contributions:
 
 Fork and PR and use issues for bug reports, feature requests and general comments.
 
-### Author:
-
-[gpestana](http://gpestana.github.com)
+:copyright: MIT
