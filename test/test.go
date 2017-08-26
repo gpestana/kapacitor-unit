@@ -11,14 +11,15 @@ import (
 )
 
 type Test struct {
-	Name    string
-	Data    []string
-	Expects Result
-	Result  Result
-	Db      string
-	Rp      string
-	Type    string
-	Task    task.Task
+	Name     string
+	TaskName string `yaml:"task_name,omitempty"`
+	Data     []string
+	Expects  Result
+	Result   Result
+	Db       string
+	Rp       string
+	Type     string
+	Task     task.Task
 }
 
 // Method exposed to start the test. It sets up the test, adds the test data,
@@ -50,7 +51,7 @@ func (t *Test) Run(k io.Kapacitor) error {
 }
 
 func (t Test) String() string {
-	return fmt.Sprintf("[TODO] Test.String()")
+	return fmt.Sprintf("TEST %v (%v) %v", t.Name, t.TaskName, t.Result.String())
 }
 
 // Adds test data
@@ -66,7 +67,7 @@ func (t *Test) addData(k io.Kapacitor) error {
 func (t *Test) setup(k io.Kapacitor) error {
 	glog.Info("Setup test:: ", t.Name)
 	f := map[string]interface{}{
-		"id":     t.Name,
+		"id":     t.TaskName,
 		"type":   t.Type,
 		"dbrps":  []map[string]string{{"db": t.Db, "rp": t.Rp}},
 		"script": t.Task.Script,
@@ -83,25 +84,23 @@ func (t *Test) setup(k io.Kapacitor) error {
 // Deletes data, database and retention policies created to run the test
 func (t *Test) teardown(k io.Kapacitor) error {
 	glog.Info("Teardown test:: ", t.Name)
-	err := k.Delete(t.Name)
+	err := k.Delete(t.TaskName)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// Fetches status of kapacitor task, compares expected test result with
-// actual test results and saves it to the test.Result struct
+// Fetches status of kapacitor task, stores it and compares expected test result
+// and actual result test
 func (t *Test) results(k io.Kapacitor) error {
 	s, err := k.Status(t.Task.Name)
 	if err != nil {
 		return err
 	}
 
-	r := NewResult(s)
-	t.Result = r
+	t.Result = NewResult(s)
 	t.Result.Compare(t.Expects)
 
-	//glog.Info(t.Result)
 	return nil
 }

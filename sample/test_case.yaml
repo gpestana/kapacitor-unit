@@ -2,13 +2,14 @@ tests:
 
   # alert_weather.tick triggers a critical alert when the measurement 
   # temperature in the dbrp weather:default is bigger than 80
-  - name: alert_weather.tick
+  - name: "Alert weather:: critical"  
+    task_name: alert_weather.tick
     db: weather
     rp: default
     type: stream
     data:
-      - weather,location=us-midwest temperature=70
-      - weather,location=us-midwest temperature=100
+      - temperature,location=us-midwest temperature=70
+      - temperature,location=us-midwest temperature=120
     expects:
       ok: 0
       warn: 0
@@ -16,16 +17,31 @@ tests:
 
   # alert_weather.tick triggers a warning alert when the measurement temperature 
   # in the dbrp weather:default is bigger than 80
-  - name: alert_weather.tick
+  - name: "Alert weather:: critical"  
+    task_name: alert_weather.tick
     db: weather
     rp: default
     type: stream
     data:
-      - weather,location=us-midwest temperature=70
-      - weather,location=us-midwest temperature=82
+      - temperature,location=us-midwest temperature=70
+      - temperature,location=us-midwest temperature=82
     expects:
       ok: 0
       warn: 1
       crit: 0
+
+  # alert_weather.tick failed test
+  - name: "Alert weather:: failure"  
+    task_name: alert_weather.tick
+    db: weather
+    rp: default
+    type: stream
+    data:
+      - temperature,location=us-midwest temperature=70
+      - temperature,location=us-midwest temperature=82
+    expects:
+      ok: 2
+      warn: 1
+      crit: 1
 
 

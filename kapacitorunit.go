@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-//Structure that holds test configuration file
+//Structure that stored tests configuration
 type C struct {
 	Tests []test.Test
 }
@@ -57,7 +57,7 @@ func testConfig(p string) (*C, error) {
 //Populates each of Test in Configuration struct with an initialized Task
 func initTests(c *C, p string) error {
 	for i, t := range c.Tests {
-		tk, err := task.New(t.Name, p)
+		tk, err := task.New(t.TaskName, p)
 		if err != nil {
 			return err
 		}

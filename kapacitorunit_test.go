@@ -23,7 +23,8 @@ func TestConfigValidYAML(t *testing.T) {
 	p := "./conf.yaml"
 	c := `
 tests:
- - name: test2
+ - name: test1
+   task_name: "test 1"
    db: test
    rp: default
    expects: 
@@ -34,7 +35,8 @@ tests:
     - data 1
     - data 2
 
- - name: test1
+ - name: test2
+   task_name: "test 2"
    db: test
    rp: default
    data: 
@@ -51,7 +53,7 @@ tests:
 		t.Error(err)
 	}
 
-	if cmap.Tests[0].Name != "test2" {
+	if cmap.Tests[0].Name != "test1" {
 		t.Error("Test name not parsed as expected")
 	}
 	if cmap.Tests[0].Data[1] != "data 2" {
@@ -87,7 +89,8 @@ func TestInitTests(t *testing.T) {
 	p := "./conf.yaml"
 	c := `
 tests:
- - name: alert_2.tick
+ - name: "alert 2"
+   task_name: alert_2.tick
    db: test
    rp: default
    expects: 
@@ -98,7 +101,8 @@ tests:
     - data 1
     - data 2
 
- - name: alert_2.tick
+ - name: "alert 2 - another"
+   task_name: "alert_2.tick"
    db: test
    rp: default
    data: 
