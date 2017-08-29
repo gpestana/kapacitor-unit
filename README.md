@@ -2,9 +2,7 @@
 
 **A test framework for TICKscripts**
 
-[![Build Status](https://travis-ci.org/gpestana/kapacitor-unit.svg?branch=master)](https://travis-ci.org/gpestana/kapacitor-unit)
-
-![Release Version](https://img.shields.io/badge/release-0.1-blue.svg)
+[![Build Status](https://travis-ci.org/gpestana/kapacitor-unit.svg?branch=master)](https://travis-ci.org/gpestana/kapacitor-unit) ![Release Version](https://img.shields.io/badge/release-0.1-blue.svg)
 
 
 Kapacitor-unit is a testing framework to make TICK scripts testing easy and
@@ -14,9 +12,6 @@ and/or the recording and replay native features.
 
 Read more about the idea and motivation behind kapacitor-unit in 
 [this blog post](http://www.gpestana.com/blog/post/kapacitor-unit/)
-
-**Note**: kapacitor-unit is still work in progress. Contributions and ideas
-are more then welcome!
 
 ## Features
 
