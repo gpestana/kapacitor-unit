@@ -14,6 +14,7 @@ type Test struct {
 	Name     string
 	TaskName string `yaml:"task_name,omitempty"`
 	Data     []string
+	RecId    string `yaml:"recording_id"`
 	Expects  Result
 	Result   Result
 	Db       string
@@ -27,31 +28,43 @@ type Test struct {
 // (database, retention policy) created for the test.
 func (t *Test) Run(k io.Kapacitor) error {
 
-	err := t.setup(k)
+	err := t.validate(k)
 	if err != nil {
 		return err
 	}
 
-	err = t.addData(k)
-	if err != nil {
-		return err
-	}
+	// Keeps running the test only if test configuration is valid
+	if t.Result.Error == false {
+		err = t.setup(k)
+		if err != nil {
+			return err
+		}
 
-	err = t.results(k)
-	if err != nil {
-		return err
-	}
+		err = t.addData(k)
+		if err != nil {
+			return err
+		}
 
-	err = t.teardown(k)
-	if err != nil {
-		return err
+		err = t.results(k)
+		if err != nil {
+			return err
+		}
+
+		err = t.teardown(k)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
 func (t Test) String() string {
-	return fmt.Sprintf("TEST %v (%v) %v", t.Name, t.TaskName, t.Result.String())
+	if t.Result.Error == true {
+		return fmt.Sprintf("TEST %v (%v) ERROR: %v", t.Name, t.TaskName, t.Result.String())
+	} else {
+		return fmt.Sprintf("TEST %v (%v) %v", t.Name, t.TaskName, t.Result.String())
+	}
 }
 
 // Adds test data
@@ -59,6 +72,18 @@ func (t *Test) addData(k io.Kapacitor) error {
 	err := k.Data(t.Data, t.Db, t.Rp)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+// Validates if individual test configuration is correct
+func (t *Test) validate(k io.Kapacitor) error {
+	glog.Info("Validate test:: ", t.Name)
+
+	if len(t.Data) > 0 && t.RecId != "" {
+		m := "Configuration file cannot define a recording_id and line protocol data input for the same test case"
+		r := Result{0, 0, 0, m, false, true}
+		t.Result = r
 	}
 	return nil
 }

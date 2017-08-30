@@ -22,6 +22,9 @@ func TestResultConstructor(t *testing.T) {
 	if r.Crit != 0 {
 		t.Error("Crit should be initialized with value 1")
 	}
+	if r.Error != false {
+		t.Error("Error should be initialized with value false")
+	}
 }
 
 func TestResultCompareOk(t *testing.T) {

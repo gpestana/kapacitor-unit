@@ -7,5 +7,9 @@ start-kapacitor:
 
 sample1:
 	go install .
+	kapacitor-unit -dir ./sample/ -tests ./sample/test_case.yaml
+
+sample1_debug:
+	go install .
 	kapacitor-unit -dir ./sample/ -tests ./sample/test_case.yaml -stderrthreshold=INFO
 

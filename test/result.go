@@ -11,6 +11,7 @@ type Result struct {
 	Crit    int
 	Message string
 	Passed  bool
+	Error   bool
 }
 
 func NewResult(r map[string]int) Result {
