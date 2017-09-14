@@ -7,6 +7,7 @@ import (
 	"github.com/golang/glog"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 // URL paths for kapacitor requests
@@ -99,7 +100,17 @@ func (k Kapacitor) Status(id string) (map[string]int, error) {
 		glog.Info(err)
 	}
 
-	sa := s.Data["node-stats"]["alert2"]
+	var sa interface{}
+	for key, value := range s.Data["node-stats"] {
+		if strings.HasPrefix(key, "alert") {
+			sa = value
+			break
+		}
+	}
+
+	if sa == nil {
+		return nil, errors.New("kapacitor.status: expected alert.* key to be found on stats")
+	}
 
 	f := make(map[string]int)
 	for k, val := range sa.(map[string]interface{}) {
