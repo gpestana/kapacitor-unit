@@ -121,3 +121,25 @@ func TestStatusNoAlertFound(t *testing.T) {
 		t.Error("Expected error to be about alert, instead it was: ", err)
 	}
 }
+
+func TestStatusMoreThanOneAlert(t *testing.T) {
+	h := "http://test:9093"
+	k := NewK(h)
+	tid := "task_id"
+	b := []byte(`{"stats": { "node-stats":  { "alert4": { "crits_triggered": 1, "warns_triggered": 1, "oks_triggered": 0 }, "alert2": { "crits_triggered": 0, "warns_triggered": 1, "oks_triggered": 0 }}}}`)
+	expected_status := map[string]int{ "crits_triggered": 1, "warns_triggered": 2, "oks_triggered": 0}
+
+	gock.New(h).
+		Get("/kapacitor/v1/tasks/" + tid).
+		Reply(200).
+		JSON(b)
+
+	status, err := k.Status(tid)
+	if err != nil {
+		t.Error("Status: Error when getting status:: ", err)
+	}
+
+	if ! reflect.DeepEqual(status, expected_status) {
+		t.Error("Status should be ", expected_status)
+	}
+}

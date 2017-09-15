@@ -100,11 +100,19 @@ func (k Kapacitor) Status(id string) (map[string]int, error) {
 		glog.Info(err)
 	}
 
+	f := make(map[string]int)
 	var sa interface{}
 	for key, value := range s.Data["node-stats"] {
 		if strings.HasPrefix(key, "alert") {
 			sa = value
-			break
+			for k, val := range sa.(map[string]interface{}) {
+				switch v := val.(type) {
+				case float64:
+					f[k] += int(v)
+				default:
+					return nil, errors.New("kapacitor.status: wrong response from service")
+				}
+			}
 		}
 	}
 
@@ -112,14 +120,5 @@ func (k Kapacitor) Status(id string) (map[string]int, error) {
 		return nil, errors.New("kapacitor.status: expected alert.* key to be found on stats")
 	}
 
-	f := make(map[string]int)
-	for k, val := range sa.(map[string]interface{}) {
-		switch v := val.(type) {
-		case float64:
-			f[k] = int(v)
-		default:
-			return nil, errors.New("kapacitor.status: wrong response from service")
-		}
-	}
 	return f, nil
 }
