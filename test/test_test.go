@@ -52,3 +52,18 @@ func TestValidateDataOk(t *testing.T) {
 		t.Error("Test initialized only with data must be valid")
 	}
 }
+
+func TestValidateRecNotOk(t *testing.T) {
+	k := io.NewK("localhost")
+	tst := NewTest()
+
+	tst.Data = []string{"data1"}
+	tst.Result = Result{}
+	tst.RecId = "some_id"
+
+	tst.validate(k)
+
+	if tst.Result.Error != true {
+		t.Error("Test configuration with recording id and protocol line data is invalid")
+	}
+}

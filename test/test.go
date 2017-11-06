@@ -5,6 +5,7 @@ package test
 
 import (
 	"fmt"
+	"errors"
 	"github.com/golang/glog"
 	"github.com/gpestana/kapacitor-unit/io"
 	"github.com/gpestana/kapacitor-unit/task"
@@ -23,39 +24,40 @@ type Test struct {
 	Task     task.Task
 }
 
+func NewTest() Test {
+	return Test{}
+}
+
 // Method exposed to start the test. It sets up the test, adds the test data,
 // fetches the triggered alerts and saves it. It also removes all artifacts
 // (database, retention policy) created for the test.
 func (t *Test) Run(k io.Kapacitor) error {
-
 	err := t.validate(k)
 	if err != nil {
 		return err
 	}
 
-	// Keeps running the test only if test configuration is valid
-	if t.Result.Error == false {
-		err = t.setup(k)
-		if err != nil {
-			return err
-		}
-
-		err = t.addData(k)
-		if err != nil {
-			return err
-		}
-
-		err = t.results(k)
-		if err != nil {
-			return err
-		}
-
-		err = t.teardown(k)
-		if err != nil {
-			return err
-		}
+	// Runs the test only if there was no errors during constructor and validation
+	if t.Result.Error == true {
+		return errors.New(t.Result.Message)
 	}
 
+	err = t.setup(k)
+	if err != nil {
+		return err
+	}
+	err = t.addData(k)
+	if err != nil {
+		return err
+	}
+	err = t.results(k)
+	if err != nil {
+		return err
+	}
+	err = t.teardown(k)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
