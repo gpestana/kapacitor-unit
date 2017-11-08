@@ -26,7 +26,7 @@ type Kapacitor struct {
 	Client http.Client
 }
 
-func NewK(host string) Kapacitor {
+func NewKapacitor(host string) Kapacitor {
 	return Kapacitor{
 		host,
 		http.Client{},
@@ -80,7 +80,6 @@ func (k Kapacitor) Data(data []string, db string, rp string) error {
 		}
 		glog.Info("Added data:: ", d)
 	}
-
 	return nil
 }
 

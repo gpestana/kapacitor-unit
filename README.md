@@ -22,6 +22,10 @@ Read more about the idea and motivation behind kapacitor-unit in
 :soon: Run tests for **stream** and **batch** TICK scripts using recordings 
 
 
+## Requirements:
+
+In order for all features to be supported, the Kapacitor version running the tests must be v1.3.4 or higher.
+
 ## Running kapacitor-unit:
 
 

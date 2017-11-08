@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-func TestConstructor(t *testing.T) {
+func TestKapacitorConstructor(t *testing.T) {
 	h := "some_host"
-	k := NewK(h)
+	k := NewKapacitor(h)
 	if k.Host != h {
 		t.Error("Constructor: Host not initialized properly:: ", k.Host, "!=", h)
 	}
@@ -22,7 +22,7 @@ func TestConstructor(t *testing.T) {
 
 func TestLoad(t *testing.T) {
 	h := "http://test:9093"
-	k := NewK(h)
+	k := NewKapacitor(h)
 
 	gock.New(h).
 		Post("/kapacitor/v1/tasks").
@@ -44,7 +44,7 @@ func TestLoad(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	h := "http://test:9093"
-	k := NewK(h)
+	k := NewKapacitor(h)
 	tid := "task_id"
 
 	gock.New(h).
@@ -59,7 +59,7 @@ func TestDelete(t *testing.T) {
 
 func TestStatusOnAlert2(t *testing.T) {
 	h := "http://test:9093"
-	k := NewK(h)
+	k := NewKapacitor(h)
 	tid := "task_id"
 	b := []byte(`{"stats": { "node-stats": { "alert2": { "crits_triggered": 0, "warns_triggered": 1, "oks_triggered": 0 } } }}`)
 	expected_status := map[string]int{ "crits_triggered": 0, "warns_triggered": 1, "oks_triggered": 0}
@@ -81,7 +81,7 @@ func TestStatusOnAlert2(t *testing.T) {
 
 func TestStatusOnOtherAlert(t *testing.T) {
 	h := "http://test:9093"
-	k := NewK(h)
+	k := NewKapacitor(h)
 	tid := "task_id"
 	b := []byte(`{"stats": { "node-stats": { "alert4": { "crits_triggered": 1, "warns_triggered": 1, "oks_triggered": 0 } } }}`)
 	expected_status := map[string]int{ "crits_triggered": 1, "warns_triggered": 1, "oks_triggered": 0}
@@ -103,7 +103,7 @@ func TestStatusOnOtherAlert(t *testing.T) {
 
 func TestStatusNoAlertFound(t *testing.T) {
 	h := "http://test:9093"
-	k := NewK(h)
+	k := NewKapacitor(h)
 	tid := "task_id"
 	b := []byte(`{"stats": { "node-stats": {} }}`)
 
@@ -124,7 +124,7 @@ func TestStatusNoAlertFound(t *testing.T) {
 
 func TestStatusMoreThanOneAlert(t *testing.T) {
 	h := "http://test:9093"
-	k := NewK(h)
+	k := NewKapacitor(h)
 	tid := "task_id"
 	b := []byte(`{"stats": { "node-stats":  { "alert4": { "crits_triggered": 1, "warns_triggered": 1, "oks_triggered": 0 }, "alert2": { "crits_triggered": 0, "warns_triggered": 1, "oks_triggered": 0 }}}}`)
 	expected_status := map[string]int{ "crits_triggered": 1, "warns_triggered": 2, "oks_triggered": 0}
