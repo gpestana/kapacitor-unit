@@ -2,8 +2,14 @@ version: '2'
 services:
 
   kapacitor: 
-    container_name: kapacitor
     build: ./kapacitor
+    container_name: kapacitor
     ports:
       - "9092:9092"
+
+  influxdb: 
+    image: influxdb:alpine
+    container_name: influxdb
+    ports:
+      - "8086:8086"
 

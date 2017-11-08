@@ -5,7 +5,6 @@ package test
 
 import (
 	"fmt"
-	"errors"
 	"github.com/golang/glog"
 	"github.com/gpestana/kapacitor-unit/io"
 	"github.com/gpestana/kapacitor-unit/task"
@@ -31,18 +30,8 @@ func NewTest() Test {
 // Method exposed to start the test. It sets up the test, adds the test data,
 // fetches the triggered alerts and saves it. It also removes all artifacts
 // (database, retention policy) created for the test.
-func (t *Test) Run(k io.Kapacitor) error {
-	err := t.validate(k)
-	if err != nil {
-		return err
-	}
-
-	// Runs the test only if there was no errors during constructor and validation
-	if t.Result.Error == true {
-		return errors.New(t.Result.Message)
-	}
-
-	err = t.setup(k)
+func (t *Test) Run(k io.Kapacitor, i io.Influxdb) error {
+	err := t.setup(k, i)
 	if err != nil {
 		return err
 	}
@@ -79,7 +68,7 @@ func (t *Test) addData(k io.Kapacitor) error {
 }
 
 // Validates if individual test configuration is correct
-func (t *Test) validate(k io.Kapacitor) error {
+func (t *Test) Validate() error {
 	glog.Info("Validate test:: ", t.Name)
 
 	if len(t.Data) > 0 && t.RecId != "" {
@@ -91,7 +80,7 @@ func (t *Test) validate(k io.Kapacitor) error {
 }
 
 // Creates all necessary artifacts in database to run the test
-func (t *Test) setup(k io.Kapacitor) error {
+func (t *Test) setup(k io.Kapacitor, i io.Influxdb) error {
 	glog.Info("Setup test:: ", t.Name)
 	f := map[string]interface{}{
 		"id":     t.TaskName,
@@ -100,7 +89,6 @@ func (t *Test) setup(k io.Kapacitor) error {
 		"script": t.Task.Script,
 		"status": "enabled",
 	}
-
 	err := k.Load(f)
 	if err != nil {
 		return err

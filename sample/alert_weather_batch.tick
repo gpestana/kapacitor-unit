@@ -1,0 +1,27 @@
+
+var weather = batch
+	| query('''
+		SELECT mean(temperature)
+		FROM "weather"."autogen"."temperature"
+		''')
+			.period(5m)
+			.every(10s)
+
+var rain = batch
+	| query('''
+		SELECT count(rain) 
+		FROM "weather"."autogen"."temperature"
+	''')
+		.period(5m)
+		.every(5m)
+
+
+// simple case with only one batch query
+
+	weather
+	| alert().id('Temperature')
+		.message('Temperature alert - batch')
+		.warn(lambda: "mean" > 80)
+		.crit(lambda: "mean" > 100)
+		.stateChangesOnly()
+    .log('/tmp/temperature_batch.tick.log')

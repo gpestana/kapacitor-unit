@@ -17,7 +17,8 @@ type C struct {
 
 func main() {
 	f := cli.Load()
-	kp := io.NewK(f.KapacitorHost)
+	kapacitor := io.NewKapacitor(f.KapacitorHost)
+	influxdb := io.NewInfluxdb(f.InfluxdbHost)
 
 	c, err := testConfig(f.TestsPath)
 	if err != nil {
@@ -29,13 +30,25 @@ func main() {
 		log.Fatal("Init Tests failed: %s", err)
 	}
 
-	//Run tests in series and print results
+	// Validates, runs tests in series and print results
 	for _, t := range c.Tests {
-		err := t.Run(kp)
-		if err != nil {
-			log.Fatal(err)
-		}
 
+		if err := t.Validate(); err != nil {
+			log.Println(err)
+			continue
+		}
+		// Runs the test only if there was no errors during constructor and validation
+		if t.Result.Error == true {
+			log.Println(t.Result.Message)
+			continue
+		}
+		// Runs test
+		err = t.Run(kapacitor, influxdb)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		//Prints test output
 		log.Println(t)
 	}
 }
