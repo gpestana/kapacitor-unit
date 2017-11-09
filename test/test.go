@@ -48,7 +48,7 @@ func (t *Test) Run(k io.Kapacitor, i io.Influxdb) error {
 	if err != nil {
 		return err
 	}
-	err = t.teardown(k)
+	err = t.teardown(k, i)
 	if err != nil {
 		return err
 	}
@@ -119,8 +119,15 @@ func (t *Test) setup(k io.Kapacitor, i io.Influxdb) error {
 }
 
 // Deletes data, database and retention policies created to run the test
-func (t *Test) teardown(k io.Kapacitor) error {
+func (t *Test) teardown(k io.Kapacitor, i io.Influxdb) error {
 	glog.Info("Teardown test:: ", t.Name)
+	switch t.Type {
+		case "batch":
+			err := i.CleanUp(t.Db)
+			if err != nil {
+				return err
+			}
+	}
 	err := k.Delete(t.TaskName)
 	if err != nil {
 		return err
