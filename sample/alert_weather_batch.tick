@@ -2,15 +2,15 @@
 var weather = batch
 	| query('''
 		SELECT mean(temperature)
-		FROM "weather"."autogen"."temperature"
+		FROM "weather"."default"."temperature"
 		''')
 			.period(5m)
-			.every(10s)
+			.every(1s)
 
 var rain = batch
 	| query('''
 		SELECT count(rain) 
-		FROM "weather"."autogen"."temperature"
+		FROM "weather"."default"."temperature"
 	''')
 		.period(5m)
 		.every(5m)

@@ -1,0 +1,14 @@
+tests:
+
+  # batch script
+  - name: "Alert weather:: batch"  
+    task_name: alert_weather_batch.tick
+    db: weather
+    rp: default
+    type: batch
+    data:
+      - temperature,location=us-midwest temperature=110
+    expects:
+      ok: 0
+      warn: 0
+      crit: 1

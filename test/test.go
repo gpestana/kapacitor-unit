@@ -8,6 +8,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/gpestana/kapacitor-unit/io"
 	"github.com/gpestana/kapacitor-unit/task"
+	"time"
 )
 
 type Test struct {
@@ -35,10 +36,14 @@ func (t *Test) Run(k io.Kapacitor, i io.Influxdb) error {
 	if err != nil {
 		return err
 	}
-	err = t.addData(k)
+	err = t.addData(k, i)
 	if err != nil {
 		return err
 	}
+	
+	// Change to better mechanism
+	time.Sleep(3 * time.Second)
+
 	err = t.results(k)
 	if err != nil {
 		return err
@@ -59,11 +64,19 @@ func (t Test) String() string {
 }
 
 // Adds test data
-func (t *Test) addData(k io.Kapacitor) error {
-	err := k.Data(t.Data, t.Db, t.Rp)
-	if err != nil {
-		return err
-	}
+func (t *Test) addData(k io.Kapacitor, i io.Influxdb) error {
+	switch t.Type {
+		case "stream":
+			err := k.Data(t.Data, t.Db, t.Rp)
+			if err != nil {
+				return err
+			}
+		case "batch":
+			err := i.Data(t.Data, t.Db, t.Rp)
+			if err != nil {
+				return err
+			}
+		}
 	return nil
 }
 
@@ -82,6 +95,15 @@ func (t *Test) Validate() error {
 // Creates all necessary artifacts in database to run the test
 func (t *Test) setup(k io.Kapacitor, i io.Influxdb) error {
 	glog.Info("Setup test:: ", t.Name)
+	switch t.Type {
+		case "batch":
+			err := i.Setup(t.Db, t.Rp)
+			if err != nil {
+				return err
+			}
+	}
+
+	// Loads test task to kapacitor
 	f := map[string]interface{}{
 		"id":     t.TaskName,
 		"type":   t.Type,

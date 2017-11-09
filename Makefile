@@ -13,3 +13,11 @@ sample1_debug:
 	go install .
 	kapacitor-unit -dir ./sample/ -tests ./sample/test_case.yaml -stderrthreshold=INFO
 
+sample1_batch:
+	go install .
+	kapacitor-unit -dir ./sample/ -tests ./sample/test_case_batch.yaml
+
+sample1_batch_debug:
+	go install .
+	kapacitor-unit -dir ./sample/ -tests ./sample/test_case_batch.yaml -stderrthreshold=INFO
+
