@@ -4,3 +4,9 @@
 // logs. It also is responsible for loading and deleting test data into
 // Influxdb as well as creating and deleting the necessary test databases.
 package io
+
+const (
+	kapacitor_write = "/kapacitor/v1/write?"
+	influxdb_write = "/write?"
+	tasks = "/kapacitor/v1/tasks"
+)

@@ -10,12 +10,6 @@ import (
 	"strings"
 )
 
-// URL paths for kapacitor requests
-const (
-	write = "/kapacitor/v1/write?"
-	tasks = "/kapacitor/v1/tasks"
-)
-
 type Status struct {
 	Data map[string]map[string]interface{} `json:"stats"`
 }
@@ -50,7 +44,6 @@ func (k Kapacitor) Load(f map[string]interface{}) error {
 		r, _ := ioutil.ReadAll(res.Body)
 		return errors.New(res.Status + ":: " + string(r))
 	}
-
 	return nil
 }
 
@@ -71,7 +64,7 @@ func (k Kapacitor) Delete(id string) error {
 
 // Adds test data to kapacitor
 func (k Kapacitor) Data(data []string, db string, rp string) error {
-	u := k.Host + write + "db=" + db + "&rp=" + rp
+	u := k.Host + kapacitor_write + "db=" + db + "&rp=" + rp
 	for _, d := range data {
 		_, err := k.Client.Post(u, "application/x-www-form-urlencoded",
 			bytes.NewBuffer([]byte(d)))

@@ -27,7 +27,7 @@ func main() {
 
 	err = initTests(c, f.ScriptsDir)
 	if err != nil {
-		log.Fatal("Init Tests failed: %s", err)
+		log.Fatal("Init Tests failed: ", err)
 	}
 
 	// Validates, runs tests in series and print results

@@ -21,42 +21,45 @@ func NewInfluxdb(host string) Influxdb {
 
 // Adds test data to influxdb
 func (influxdb Influxdb) Data(data []string, db string, rp string) error {
-	url := influxdb.Host + write + "db=" + db + "&rp=" + rp
+	url := influxdb.Host + influxdb_write + "db=" + db + "&rp=" + rp
 	for _, d := range data {
 		_, err := influxdb.Client.Post(url, "application/x-www-form-urlencoded",
 			bytes.NewBuffer([]byte(d)))
 		if err != nil {
 			return err
 		}
-		glog.Info("Added data:: ", d)
+		glog.Info("Influxdb added data:: ", d)
+		glog.Info("Influxdb added TO URL:: ", url)
+
 	}
 	return nil
 }
 
 // Creates db and rp where tests will run
 func (influxdb Influxdb) Setup(db string, rp string) error {
-	err := influxdb.query("q=CREATE DATABASE "+db)
-	if err != nil {
-		return err
+	glog.Info("Influxdb Setup:: ", db+":"+rp)
+	// If no retention policy is defined, use "autogen"
+	if rp == "" {
+		rp = "autogen"
 	}
-	// rp autogen is created by default
-	if rp != "autogen" {
-		err = influxdb.query("CREATE RETENTION POLICY "+rp+" ON "+db)
-		if err != nil {
-			return err
-		}		
-	}
-	return nil
-}
-
-func (influxdb Influxdb) query(q string) error {
-	url := influxdb.Host + "query"
-	_, err := influxdb.Client.Post(url, "application/x-www-form-urlencoded",
+	q := "q=CREATE DATABASE \""+db+"\" WITH DURATION 1h REPLICATION 1 NAME \""+rp+"\""
+	baseUrl := influxdb.Host + "/query"
+	_, err := influxdb.Client.Post(baseUrl, "application/x-www-form-urlencoded",
 		bytes.NewBuffer([]byte(q)))
 	if err != nil {
 		return err
 	}
-	glog.Info("Influxdb query:: ", q)
 	return nil
 }
 
+func (influxdb Influxdb) CleanUp(db string) error {
+	q := "q=DROP DATABASE \""+db+"\""
+	baseUrl := influxdb.Host + "/query"
+	_, err := influxdb.Client.Post(baseUrl, "application/x-www-form-urlencoded",
+		bytes.NewBuffer([]byte(q)))
+	if err != nil {
+		return err
+	}
+	glog.Info("Influxdb CleanUp database:: ", q)
+	return nil
+}
