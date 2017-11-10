@@ -143,3 +143,63 @@ func TestStatusMoreThanOneAlert(t *testing.T) {
 		t.Error("Status should be ", expected_status)
 	}
 }
+
+func TestBatchScriptReplace(t *testing.T) {
+	str1 := "Hello world .every(1d) Hello Mars!! .every(22h)!!"
+	exp1 := "Hello world .every(1s) Hello Mars!! .every(1s)!!"
+
+	res1, _ := batchReplaceEvery([]byte(str1))
+	res1_s := string(res1[:])
+	if res1_s != exp1 {
+		t.Error(res1_s + " should be " + exp1)
+	}
+
+
+	str2 := `
+var weather = batch
+	| query('''
+		SELECT mean(temperature)
+		FROM "weather"."default"."temperature"
+		''')
+			.period(5m)
+			.every(5m)
+
+var rain = batch
+	| query('''
+		SELECT count(rain) 
+		FROM "weather"."default"."temperature"
+	''')
+		.period(5m)
+		.every(2h)
+
+// simple case with only one batch query
+`
+
+	exp2 := `
+var weather = batch
+	| query('''
+		SELECT mean(temperature)
+		FROM "weather"."default"."temperature"
+		''')
+			.period(5m)
+			.every(1s)
+
+var rain = batch
+	| query('''
+		SELECT count(rain) 
+		FROM "weather"."default"."temperature"
+	''')
+		.period(5m)
+		.every(1s)
+
+// simple case with only one batch query
+`
+
+	res2, _ := batchReplaceEvery([]byte(str2))
+	res2_s := string(res2[:])
+	if res2_s != exp2 {
+		t.Error(res2_s + " should be " + exp2)
+	}
+
+}
+
