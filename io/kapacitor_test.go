@@ -148,12 +148,10 @@ func TestBatchScriptReplace(t *testing.T) {
 	str1 := "Hello world .every(1d) Hello Mars!! .every(22h)!!"
 	exp1 := "Hello world .every(1s) Hello Mars!! .every(1s)!!"
 
-	res1, _ := batchReplaceEvery([]byte(str1))
-	res1_s := string(res1[:])
-	if res1_s != exp1 {
-		t.Error(res1_s + " should be " + exp1)
+	res1 := batchReplaceEvery(str1)
+	if res1 != exp1 {
+		t.Error(res1 + " should be " + exp1)
 	}
-
 
 	str2 := `
 var weather = batch
@@ -195,10 +193,9 @@ var rain = batch
 // simple case with only one batch query
 `
 
-	res2, _ := batchReplaceEvery([]byte(str2))
-	res2_s := string(res2[:])
-	if res2_s != exp2 {
-		t.Error(res2_s + " should be " + exp2)
+	res2 := batchReplaceEvery(str2)
+	if res2 != exp2 {
+		t.Error(res2 + " should be " + exp2)
 	}
 
 }

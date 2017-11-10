@@ -31,23 +31,22 @@ func NewKapacitor(host string) Kapacitor {
 // Loads a task
 func (k Kapacitor) Load(f map[string]interface{}) error {
 	glog.Info("Loading task:: ", f["id"])
-	j, err := json.Marshal(f)
-	if err != nil {
-		return err
-	}
 	// Replaces '.every()' if type of script is batch
 	if f["type"] == "batch" {
 		str, ok := f["script"].(string)
 		if ok != true {
 			return errors.New("Task Load: script is not of type string")
 		}
-		n, err := batchReplaceEvery([]byte(str))
-		if err != nil {
-			return err
-		}
-		f["script"] = n
+		f["script"] = batchReplaceEvery(str)
+
+		glog.Info("Batch script loading: ", f["script"])
 	}
 
+	j, err := json.Marshal(f)
+	if err != nil {
+		return err
+	}
+	
 	u := k.Host + tasks
 	res, err := k.Client.Post(u, "application/json", bytes.NewBuffer(j))
 	if err != nil {
@@ -130,9 +129,7 @@ func (k Kapacitor) Status(id string) (map[string]int, error) {
 }
 
 // Replaces '.every(*)' for the batch request to be performed every 1s to speed up the test
-func batchReplaceEvery(s []byte) ([]byte, error) {
+func batchReplaceEvery(s string) string {
 	re := regexp.MustCompile("every\\((.*?)\\)")
-	scr := string(s[:])
-	rpl := re.ReplaceAllString(scr, "every(1s)")
-	return []byte(rpl), nil
+	return re.ReplaceAllString(s, "every(1s)")
 }
