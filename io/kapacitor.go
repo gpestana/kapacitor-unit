@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"regexp"
 )
 
 type Status struct {
@@ -34,6 +35,19 @@ func (k Kapacitor) Load(f map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
+	// Replaces '.every()' if type of script is batch
+	if f["type"] == "batch" {
+		str, ok := f["script"].(string)
+		if ok != true {
+			return errors.New("Task Load: script is not of type string")
+		}
+		n, err := batchReplaceEvery([]byte(str))
+		if err != nil {
+			return err
+		}
+		f["script"] = n
+	}
+
 	u := k.Host + tasks
 	res, err := k.Client.Post(u, "application/json", bytes.NewBuffer(j))
 	if err != nil {
@@ -113,4 +127,12 @@ func (k Kapacitor) Status(id string) (map[string]int, error) {
 	}
 
 	return f, nil
+}
+
+// Replaces '.every(*)' for the batch request to be performed every 1s to speed up the test
+func batchReplaceEvery(s []byte) ([]byte, error) {
+	re := regexp.MustCompile("every\\((.*?)\\)")
+	scr := string(s[:])
+	rpl := re.ReplaceAllString(scr, "every(1s)")
+	return []byte(rpl), nil
 }

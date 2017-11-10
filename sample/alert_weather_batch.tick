@@ -5,7 +5,7 @@ var weather = batch
 		FROM "weather"."default"."temperature"
 		''')
 			.period(5m)
-			.every(1s)
+			.every(10m)
 
 var rain = batch
 	| query('''
@@ -13,7 +13,7 @@ var rain = batch
 		FROM "weather"."default"."temperature"
 	''')
 		.period(5m)
-		.every(5m)
+		.every(3d)
 
 
 // simple case with only one batch query
