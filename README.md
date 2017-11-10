@@ -6,8 +6,7 @@
 
 
 Kapacitor-unit is a testing framework to make TICK scripts testing easy and
-automated. Test your tasks using pre defined data points and expected results
-and/or the recording and replay native features.
+automated. Testing with Kapacitor-unit is as easy as defining the test configuration defining which alerts are expected to trigger when the TICK script ingests specific data. 
 
 
 Read more about the idea and motivation behind kapacitor-unit in 
@@ -17,7 +16,7 @@ Read more about the idea and motivation behind kapacitor-unit in
 
 :heavy_check_mark: Run tests for **stream** TICK scripts using protocol line data input 
 
-:soon: Run tests for **batch** TICK scripts using protocol line data input 
+:heavy_check_mark: Run tests for **batch** TICK scripts using protocol line data input 
 
 :soon: Run tests for **stream** and **batch** TICK scripts using recordings 
 
@@ -40,7 +39,7 @@ go install github.com/gpestana/kapacitor-unit/kapacitor-unit
 3) Run the tests
 
 ```
-kapacitor-unit --dir <*.tick directory> --kapacitor <kapacitor host> --tests <test configuration path>
+kapacitor-unit --dir <*.tick directory> --kapacitor <kapacitor host> --influxdb <influxdb host> --tests <test configuration path>
 ```
 
 ### Test case definition:
@@ -62,6 +61,7 @@ tests:
 
     db: weather
     rp: default 
+    type: stream
 
      # 'data' is an array of data in the line protocol
     data:
@@ -76,10 +76,23 @@ tests:
       crit: 0
 
 
-  - name: Alert no. 2
+  - name: Alert no. 2 using recording
     task_id: alert_weather.tick
     db: weather
     rp: default 
+    type: stream
+    recordind_id: 7c581a06-769d-45cb-97fe-a3c4d7ba061a
+    expects:
+      ok: 0
+      warn: 1
+      crit: 0
+
+
+  - name: Alert no. 3 - Batch
+    task_id: alert_weather.tick
+    db: weather
+    rp: default 
+    type: batch
     data:
       - weather,location=us-midwest temperature=80
       - weather,location=us-midwest temperature=82

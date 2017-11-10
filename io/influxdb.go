@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"github.com/golang/glog"
 	"net/http"
+	"fmt"
 )
 
 // Influxdb service configurations
@@ -23,14 +24,13 @@ func NewInfluxdb(host string) Influxdb {
 func (influxdb Influxdb) Data(data []string, db string, rp string) error {
 	url := influxdb.Host + influxdb_write + "db=" + db + "&rp=" + rp
 	for _, d := range data {
+			fmt.Println(d)
 		_, err := influxdb.Client.Post(url, "application/x-www-form-urlencoded",
 			bytes.NewBuffer([]byte(d)))
 		if err != nil {
 			return err
 		}
-		glog.Info("Influxdb added data:: ", d)
-		glog.Info("Influxdb added TO URL:: ", url)
-
+		glog.Info("Influxdb:: Added ["+d+"] to "+url)
 	}
 	return nil
 }

@@ -8,6 +8,7 @@ tests:
     type: batch
     data:
       - temperature,location=us-midwest temperature=110
+      - temperature,location=us-midwest temperature=91
     expects:
       ok: 0
       warn: 0
