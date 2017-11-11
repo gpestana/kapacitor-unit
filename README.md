@@ -6,7 +6,7 @@
 
 
 Kapacitor-unit is a testing framework to make TICK scripts testing easy and
-automated. Testing with Kapacitor-unit is as easy as defining the test configuration defining which alerts are expected to trigger when the TICK script ingests specific data. 
+automated. Testing with Kapacitor-unit is as easy as defining the test configuration saying which alerts are expected to trigger when the TICK script processes specific data. 
 
 
 Read more about the idea and motivation behind kapacitor-unit in 

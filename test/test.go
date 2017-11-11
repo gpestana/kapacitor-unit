@@ -40,10 +40,7 @@ func (t *Test) Run(k io.Kapacitor, i io.Influxdb) error {
 	if err != nil {
 		return err
 	}
-	
-	// Change to better mechanism
-	time.Sleep(3 * time.Second)
-
+	t.wait()
 	err = t.results(k)
 	if err != nil {
 		return err
@@ -116,6 +113,14 @@ func (t *Test) setup(k io.Kapacitor, i io.Influxdb) error {
 		return err
 	}
 	return nil
+}
+
+func (t *Test) wait() {
+	switch t.Type {
+		case "batch":
+			// If batch script, waits 3 seconds for batch queries being processed
+			time.Sleep(3 * time.Second)
+	}
 }
 
 // Deletes data, database and retention policies created to run the test
