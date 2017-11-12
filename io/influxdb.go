@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"github.com/golang/glog"
 	"net/http"
-	"fmt"
 )
 
 // Influxdb service configurations
@@ -24,20 +23,19 @@ func NewInfluxdb(host string) Influxdb {
 func (influxdb Influxdb) Data(data []string, db string, rp string) error {
 	url := influxdb.Host + influxdb_write + "db=" + db + "&rp=" + rp
 	for _, d := range data {
-			fmt.Println(d)
 		_, err := influxdb.Client.Post(url, "application/x-www-form-urlencoded",
 			bytes.NewBuffer([]byte(d)))
 		if err != nil {
 			return err
 		}
-		glog.Info("Influxdb:: Added ["+d+"] to "+url)
+		glog.Info("DEBUG:: Influxdb added ["+d+"] to "+url)
 	}
 	return nil
 }
 
 // Creates db and rp where tests will run
 func (influxdb Influxdb) Setup(db string, rp string) error {
-	glog.Info("Influxdb Setup:: ", db+":"+rp)
+	glog.Info("DEGUB:: Influxdb setup ", db+":"+rp)
 	// If no retention policy is defined, use "autogen"
 	if rp == "" {
 		rp = "autogen"
@@ -60,6 +58,6 @@ func (influxdb Influxdb) CleanUp(db string) error {
 	if err != nil {
 		return err
 	}
-	glog.Info("Influxdb CleanUp database:: ", q)
+	glog.Info("DEBUG:: Influxdb cleanup database ", q)
 	return nil
 }

@@ -65,7 +65,7 @@ func TestResultCompareNOk(t *testing.T) {
 	m2["crits_triggered"] = 0
 	r2 := NewResult(m2)
 
-	s := "FAIL\nShould have triggered 1 Ok alerts, triggered 2\nAlerts triggered (ok: 2, warn: 2, crit: 0)\n"
+	s := "FAIL\n Should have triggered 1 Ok alerts, triggered 2\n Alerts triggered (ok: 2, warn: 2, crit: 0)\n"
 
 	r1.Compare(r2)
 

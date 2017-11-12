@@ -30,7 +30,7 @@ func NewKapacitor(host string) Kapacitor {
 
 // Loads a task
 func (k Kapacitor) Load(f map[string]interface{}) error {
-	glog.Info("Loading task:: ", f["id"])
+	glog.Info("DEBUG:: Kapacitor loading task: ", f["id"])
 	// Replaces '.every()' if type of script is batch
 	if f["type"] == "batch" {
 		str, ok := f["script"].(string)
@@ -39,7 +39,7 @@ func (k Kapacitor) Load(f map[string]interface{}) error {
 		}
 		f["script"] = batchReplaceEvery(str)
 
-		glog.Info("Batch script loading: ", f["script"])
+		glog.Info("DEBUG:: batch script after replace: ", f["script"])
 	}
 
 	j, err := json.Marshal(f)
@@ -71,7 +71,7 @@ func (k Kapacitor) Delete(id string) error {
 	if err != nil {
 		return err
 	}
-	glog.Info("Deleted task:: ", id)
+	glog.Info("DEBUG:: Kapacitor deleted task: ", id)
 	return nil
 }
 
@@ -84,27 +84,25 @@ func (k Kapacitor) Data(data []string, db string, rp string) error {
 		if err != nil {
 			return err
 		}
-		glog.Info("Added data:: ", d)
+		glog.Info("DEBUG:: Kapacitor added data: ", d)
 	}
 	return nil
 }
 
 // Gets task alert status
 func (k Kapacitor) Status(id string) (map[string]int, error) {
-	glog.Info("Fetching status of:: ", id)
+	glog.Info("DEBUG:: Kapacitor fetching status of: ", id)
 	u := k.Host + tasks + "/" + id
 	res, err := k.Client.Get(u)
 	if err != nil {
 		return nil, err
 	}
-
 	var s Status
 	b, err := ioutil.ReadAll(res.Body)
 	err = json.Unmarshal(b, &s)
 	if err != nil {
-		glog.Info(err)
+		return nil, err
 	}
-
 	f := make(map[string]int)
 	var sa interface{}
 	for key, value := range s.Data["node-stats"] {
@@ -120,11 +118,9 @@ func (k Kapacitor) Status(id string) (map[string]int, error) {
 			}
 		}
 	}
-
 	if sa == nil {
 		return nil, errors.New("kapacitor.status: expected alert.* key to be found on stats")
 	}
-
 	return f, nil
 }
 

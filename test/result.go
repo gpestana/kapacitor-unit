@@ -36,17 +36,15 @@ func (r *Result) Compare(r2 Result) {
 func errorMessage(rexp Result, r Result) string {
 	s := []string{"FAIL\n"}
 	if rexp.Ok != r.Ok {
-		s = append(s, fmt.Sprintf("Should have triggered %v Ok alerts, triggered %v\n", rexp.Ok, r.Ok))
+		s = append(s, fmt.Sprintf(" Should have triggered %v Ok alerts, triggered %v\n", rexp.Ok, r.Ok))
 	}
 	if rexp.Warn != r.Warn {
-		s = append(s, fmt.Sprintf("Should have triggered %v Warning alerts, triggered %v\n", rexp.Warn, r.Warn))
+		s = append(s, fmt.Sprintf(" Should have triggered %v Warning alerts, triggered %v\n", rexp.Warn, r.Warn))
 	}
 	if rexp.Crit != r.Crit {
-		s = append(s, fmt.Sprintf("Should have triggered %v Critical alerts, triggered %v\n", rexp.Crit, r.Crit))
+		s = append(s, fmt.Sprintf(" Should have triggered %v Critical alerts, triggered %v\n", rexp.Crit, r.Crit))
 	}
-
-	s = append(s, fmt.Sprintf("Alerts triggered (ok: %v, warn: %v, crit: %v)\n", r.Ok, r.Warn, r.Crit))
-
+	s = append(s, fmt.Sprintf(" Alerts triggered (ok: %v, warn: %v, crit: %v)\n", r.Ok, r.Warn, r.Crit))
 	return strings.Join(s, "")
 }
 

@@ -79,8 +79,7 @@ func (t *Test) addData(k io.Kapacitor, i io.Influxdb) error {
 
 // Validates if individual test configuration is correct
 func (t *Test) Validate() error {
-	glog.Info("Validate test:: ", t.Name)
-
+	glog.Info("DEBUG:: validate test: ", t.Name)
 	if len(t.Data) > 0 && t.RecId != "" {
 		m := "Configuration file cannot define a recording_id and line protocol data input for the same test case"
 		r := Result{0, 0, 0, m, false, true}
@@ -91,7 +90,7 @@ func (t *Test) Validate() error {
 
 // Creates all necessary artifacts in database to run the test
 func (t *Test) setup(k io.Kapacitor, i io.Influxdb) error {
-	glog.Info("Setup test:: ", t.Name)
+	glog.Info("DEBUG:: setup test: ", t.Name)
 	switch t.Type {
 		case "batch":
 			err := i.Setup(t.Db, t.Rp)
@@ -119,13 +118,14 @@ func (t *Test) wait() {
 	switch t.Type {
 		case "batch":
 			// If batch script, waits 3 seconds for batch queries being processed
+			fmt.Println("Processing batch script "+t.TaskName+"...")
 			time.Sleep(3 * time.Second)
 	}
 }
 
 // Deletes data, database and retention policies created to run the test
 func (t *Test) teardown(k io.Kapacitor, i io.Influxdb) error {
-	glog.Info("Teardown test:: ", t.Name)
+	glog.Info("DEBUG:: teardown test: ", t.Name)
 	switch t.Type {
 		case "batch":
 			err := i.CleanUp(t.Db)
@@ -147,9 +147,7 @@ func (t *Test) results(k io.Kapacitor) error {
 	if err != nil {
 		return err
 	}
-
 	t.Result = NewResult(s)
 	t.Result.Compare(t.Expects)
-
 	return nil
 }
