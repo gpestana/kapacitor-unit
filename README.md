@@ -12,6 +12,11 @@ automated. Testing with Kapacitor-unit is as easy as defining the test configura
 Read more about the idea and motivation behind kapacitor-unit in 
 [this blog post](http://www.gpestana.com/blog/post/kapacitor-unit/)
 
+
+## Show me Kapacitor-unit in action!
+![usage-example](https://media.giphy.com/media/xT0xetJEkloDtbVHSU/giphy.gif)
+
+
 ## Features
 
 :heavy_check_mark: Run tests for **stream** TICK scripts using protocol line data input 
