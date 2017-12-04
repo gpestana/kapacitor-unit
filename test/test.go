@@ -63,17 +63,19 @@ func (t Test) String() string {
 // Adds test data
 func (t *Test) addData(k io.Kapacitor, i io.Influxdb) error {
 	switch t.Type {
-		case "stream":
-			err := k.Data(t.Data, t.Db, t.Rp)
-			if err != nil {
-				return err
-			}
-		case "batch":
-			err := i.Data(t.Data, t.Db, t.Rp)
-			if err != nil {
-				return err
-			}
+	case "stream":
+		// adds data to kapacitor
+		err := k.Data(t.Data, t.Db, t.Rp)
+		if err != nil {
+			return err
 		}
+	case "batch":
+		// adds data to InfluxDb
+		err := i.Data(t.Data, t.Db, t.Rp)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -92,11 +94,11 @@ func (t *Test) Validate() error {
 func (t *Test) setup(k io.Kapacitor, i io.Influxdb) error {
 	glog.Info("DEBUG:: setup test: ", t.Name)
 	switch t.Type {
-		case "batch":
-			err := i.Setup(t.Db, t.Rp)
-			if err != nil {
-				return err
-			}
+	case "batch":
+		err := i.Setup(t.Db, t.Rp)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Loads test task to kapacitor
@@ -116,10 +118,10 @@ func (t *Test) setup(k io.Kapacitor, i io.Influxdb) error {
 
 func (t *Test) wait() {
 	switch t.Type {
-		case "batch":
-			// If batch script, waits 3 seconds for batch queries being processed
-			fmt.Println("Processing batch script "+t.TaskName+"...")
-			time.Sleep(3 * time.Second)
+	case "batch":
+		// If batch script, waits 3 seconds for batch queries being processed
+		fmt.Println("Processing batch script " + t.TaskName + "...")
+		time.Sleep(3 * time.Second)
 	}
 }
 
@@ -127,11 +129,11 @@ func (t *Test) wait() {
 func (t *Test) teardown(k io.Kapacitor, i io.Influxdb) error {
 	glog.Info("DEBUG:: teardown test: ", t.Name)
 	switch t.Type {
-		case "batch":
-			err := i.CleanUp(t.Db)
-			if err != nil {
-				return err
-			}
+	case "batch":
+		err := i.CleanUp(t.Db)
+		if err != nil {
+			return err
+		}
 	}
 	err := k.Delete(t.TaskName)
 	if err != nil {
