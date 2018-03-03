@@ -10,7 +10,7 @@ automated. Testing with Kapacitor-unit is as easy as defining the test configura
 
 
 Read more about the idea and motivation behind kapacitor-unit in 
-[this blog post](http://www.gpestana.com/blog/post/kapacitor-unit/)
+[this blog post](http://www.gpestana.com/blog/kapacitor-unit/)
 
 
 ## Show me Kapacitor-unit in action!
@@ -36,7 +36,7 @@ In order for all features to be supported, the Kapacitor version running the tes
 1) Install kapacitor-unit
 
 ```
-go install github.com/gpestana/kapacitor-unit/kapacitor-unit 
+go install github.com/gpestana/kapacitor-unit
 ````
 
 2) Define the test configuration file (see below) 
@@ -60,9 +60,9 @@ tests:
   - name: Alert weather:: warning
     description: Task should trigger Warning when temperature raises about 80 
 
-    # 'task_script' defines the name of the file of the tick script to be loaded
+    # 'task_name' defines the name of the file of the tick script to be loaded
     # when running the test
-    task_script: alert_weather.tick
+    task_name: alert_weather.tick
 
     db: weather
     rp: default 
