@@ -36,6 +36,7 @@ In order for all features to be supported, the Kapacitor version running the tes
 1) Install kapacitor-unit
 
 ```
+go get github.com/gpestana/kapacitor-unit
 go install github.com/gpestana/kapacitor-unit
 ````
 
