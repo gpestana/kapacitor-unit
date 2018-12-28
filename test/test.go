@@ -9,6 +9,7 @@ import (
 	"github.com/gpestana/kapacitor-unit/io"
 	"github.com/gpestana/kapacitor-unit/task"
 	"time"
+	"regexp"
 )
 
 type Test struct {
@@ -105,10 +106,15 @@ func (t *Test) setup(k io.Kapacitor, i io.Influxdb) error {
 	f := map[string]interface{}{
 		"id":     t.TaskName,
 		"type":   t.Type,
-		"dbrps":  []map[string]string{{"db": t.Db, "rp": t.Rp}},
 		"script": t.Task.Script,
 		"status": "enabled",
 	}
+
+	dbrp, _ := regexp.MatchString(`(?m:^dbrp \"\w+\"\.\"\w+\"$)`, t.Task.Script)
+	if !dbrp {
+		f["dbrps"] = []map[string]string{{"db": t.Db, "rp": t.Rp}}
+	}
+
 	err := k.Load(f)
 	if err != nil {
 		return err
