@@ -25,7 +25,7 @@ func Load() *Config {
 	flag.Parse()
 
 	if *testsPath == "" {
-		log.Fatal("ERROR: Path for tests definitons (--tests) must be defined")
+		log.Fatal("ERROR: Path for tests definitions (--tests) must be defined")
 	}
 
 	if *scriptsDir == "" {
