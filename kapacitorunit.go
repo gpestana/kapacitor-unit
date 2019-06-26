@@ -27,7 +27,7 @@ func main() {
 
 	c, err := testConfig(f.TestsPath)
 	if err != nil {
-		log.Fatal("Test configuration parse failed")
+		log.Fatal("Error loading configurations: ", err)
 	}
 	err = initTests(c, f.ScriptsDir)
 	if err != nil {
@@ -48,7 +48,7 @@ func main() {
 		// Runs test
 		err = t.Run(kapacitor, influxdb)
 		if err != nil {
-			log.Println(err)
+			log.Println("Error running test: ", t, " Error: ", err)
 			continue
 		}
 		//Prints test output
