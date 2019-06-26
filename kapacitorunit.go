@@ -10,13 +10,12 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
-//Structure that stored tests configuration
-type C struct {
-	Tests []test.Test
-}
+type TestCollection []test.Test
 
 func main() {
 	fmt.Println(renderWelcome())
@@ -25,17 +24,17 @@ func main() {
 	kapacitor := io.NewKapacitor(f.KapacitorHost)
 	influxdb := io.NewInfluxdb(f.InfluxdbHost)
 
-	c, err := testConfig(f.TestsPath)
+	tests, err := testConfig(f.TestsPath)
 	if err != nil {
-		log.Fatal("Error loading configurations: ", err)
+		log.Fatal("Error loading test configurations: ", err)
 	}
-	err = initTests(c, f.ScriptsDir)
+	err = initTests(tests, f.ScriptsDir)
 	if err != nil {
 		log.Fatal("Init Tests failed: ", err)
 	}
 
 	// Validates, runs tests in series and print results
-	for _, t := range c.Tests {
+	for _, t := range tests {
 		if err := t.Validate(); err != nil {
 			log.Println(err)
 			continue
@@ -67,28 +66,72 @@ func setColor(t test.Test) {
 	}
 }
 
-//Opens and parses test configuration file into a structure
-func testConfig(p string) (*C, error) {
-	c, err := ioutil.ReadFile(p)
+func loadYamlFile(fileName string) (TestCollection, error) {
+
+	type conf struct {
+		Tests TestCollection
+	}
+
+	b, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}
-	cmap := C{}
-	err = yaml.Unmarshal([]byte(c), &cmap)
+
+	c := conf{}
+
+	err = yaml.Unmarshal(b, &c)
+
 	if err != nil {
-		return &cmap, err
+		return nil, err
 	}
-	return &cmap, nil
+
+	return c.Tests, err
+
+}
+
+//Opens and parses test configuration file into a structure
+func testConfig(fileName string) (TestCollection, error) {
+
+	stat, err := os.Stat(fileName)
+	if err != nil {
+		return nil, err
+	}
+
+	files := make([]string, 0)
+
+	if stat.IsDir() {
+		filepath.Walk(fileName, func(path string, info os.FileInfo, err error) error {
+			if ext := filepath.Ext(path); ext == ".yml" || ext == ".yaml" {
+				files = append(files, path)
+			}
+			return nil
+		})
+
+	} else {
+		files = append(files, fileName)
+	}
+
+	tests := make(TestCollection, 0)
+
+	for _, file := range files {
+		fileTests, err := loadYamlFile(file)
+		if err != nil {
+			return nil, err
+		}
+		tests = append(tests, fileTests...)
+	}
+
+	return tests, nil
 }
 
 //Populates each of Test in Configuration struct with an initialized Task
-func initTests(c *C, p string) error {
-	for i, t := range c.Tests {
+func initTests(c TestCollection, p string) error {
+	for i, t := range c {
 		tk, err := task.New(t.TaskName, p)
 		if err != nil {
 			return err
 		}
-		c.Tests[i].Task = *tk
+		c[i].Task = *tk
 	}
 	return nil
 }
