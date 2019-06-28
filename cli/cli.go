@@ -29,7 +29,7 @@ func Load() *Config {
 	}
 
 	if *scriptsDir == "" {
-		log.Fatal("ERROR: Path for where TICKscipts directory (--dir) must be defined")
+		log.Fatal("ERROR: Path for where TICKscripts directory (--dir) must be defined")
 	}
 
 	config := Config{*testsPath, *scriptsDir, *influxdbHost, *kapacitorHost}

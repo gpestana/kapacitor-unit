@@ -48,15 +48,15 @@ tests:
 `
 	defer os.Remove(p)
 	createConfFile(p, c)
-	cmap, err := testConfig(p)
+	tests, err := testConfig(p)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if cmap.Tests[0].Name != "test1" {
+	if tests[0].Name != "test1" {
 		t.Error("Test name not parsed as expected")
 	}
-	if cmap.Tests[0].Data[1] != "data 2" {
+	if tests[0].Data[1] != "data 2" {
 		t.Error("Data not parsed as expected")
 	}
 	//if cmap.Tests[1].Expects != "critical" {
@@ -115,17 +115,17 @@ tests:
 
 	defer os.Remove(p)
 	createConfFile(p, c)
-	cmap, err := testConfig(p)
+	tests, err := testConfig(p)
 	if err != nil {
 		t.Error(err)
 	}
 
-	err = initTests(cmap, "./sample/")
+	err = initTests(tests, "./sample/tick_scripts")
 	if err != nil {
 		t.Error(err)
 	}
 
-	if cmap.Tests[0].Task.Name != "alert_2.tick" {
-		t.Error(cmap.Tests[0].Task.Name)
+	if tests[0].Task.Name != "alert_2.tick" {
+		t.Error(tests[0].Task.Name)
 	}
 }
