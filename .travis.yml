@@ -1,8 +1,8 @@
 language: go
 go:
   - master
-
 install:
   - go get -u gopkg.in/h2non/gock.v1
+  - make setup
 
 script: make tests

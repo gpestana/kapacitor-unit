@@ -1,6 +1,9 @@
 tests:
 	go test -cover ./cmd/kapacitor-unit ./io ./task ./test
 
+setup:
+	go get ./cmd/kapacitor-unit ./io ./task ./test
+
 install:
 	go install ./cmd/kapacitor-unit
 
