@@ -5,3 +5,4 @@ go:
 install:
   - go get -u gopkg.in/h2non/gock.v1
 
+script: make tests
