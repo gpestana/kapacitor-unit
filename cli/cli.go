@@ -3,6 +3,7 @@ package cli
 import (
 	"flag"
 	"log"
+	"os"
 )
 
 type Config struct {
@@ -14,25 +15,62 @@ type Config struct {
 	KapacitorHost string
 }
 
+func envOrDefault(env string, def string) string {
+	v, exists := os.LookupEnv(env)
+	if exists {
+		return v
+	}
+	return def
+}
+
+// Validates that we have paths or fails
+func (c *Config) Validate() {
+	if c.TestsPath == "" {
+		log.Fatal("ERROR: Path for tests definitions (--tests) must be defined")
+	}
+
+	if c.ScriptsDir == "" {
+		log.Fatal("ERROR: Path for where TICKscripts directory (--dir) must be defined")
+	}
+}
+
+// Loads env variables first than overrides with flags if provided
 func Load() *Config {
-	influxdbHost := flag.String("influxdb", "http://localhost:8086",
+
+	// set default values
+	conf := Config{
+		TestsPath: envOrDefault("KU_TEST_PATH",""),
+		ScriptsDir: envOrDefault("KU_SCRIPTS_DIR", ""),
+		InfluxdbHost: envOrDefault("KU_INFLUX_HOST", "http://localhost:8086"),
+		KapacitorHost: envOrDefault("KU_KAPACITOR_HOST", "http://localhost:9092"),
+	}
+
+	influxdbHost := flag.String("influxdb", "",
 		"InfluxDB host")
-	kapacitorHost := flag.String("kapacitor", "http://localhost:9092",
+	kapacitorHost := flag.String("kapacitor", "",
 		"Kapacitor host")
 	testsPath := flag.String("tests", "", "Tests definition file")
 	scriptsDir := flag.String("dir", "", "TICKscripts directory")
 
 	flag.Parse()
 
-	if *testsPath == "" {
-		log.Fatal("ERROR: Path for tests definitions (--tests) must be defined")
+	if *influxdbHost != "" {
+		conf.InfluxdbHost = *influxdbHost
 	}
 
-	if *scriptsDir == "" {
-		log.Fatal("ERROR: Path for where TICKscripts directory (--dir) must be defined")
+	if *kapacitorHost != "" {
+		conf.KapacitorHost = *kapacitorHost
 	}
 
-	config := Config{*testsPath, *scriptsDir, *influxdbHost, *kapacitorHost}
+	if *testsPath != "" {
+		conf.TestsPath = *testsPath
+	}
 
-	return &config
+	if *scriptsDir != "" {
+		conf.ScriptsDir = *scriptsDir
+	}
+
+	conf.Validate()
+
+	return &conf
 }
