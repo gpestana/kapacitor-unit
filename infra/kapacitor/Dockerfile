@@ -1,4 +1,4 @@
-FROM kapacitor:1.0
+FROM kapacitor:1.5
 
 COPY init.sh /init.sh
 COPY kapacitor.conf /etc/kapacitor/kapacitor-unit.conf

@@ -120,7 +120,7 @@ tests:
 		t.Error(err)
 	}
 
-	err = initTests(tests, "./sample/tick_scripts")
+	err = initTests(tests, "../../sample/tick_scripts")
 	if err != nil {
 		t.Error(err)
 	}

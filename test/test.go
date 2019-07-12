@@ -33,6 +33,9 @@ func NewTest() Test {
 // fetches the triggered alerts and saves it. It also removes all artifacts
 // (database, retention policy) created for the test.
 func (t *Test) Run(k io.Kapacitor, i io.Influxdb) error {
+
+	defer t.teardown(k, i) //defer teardown so it gets run incase of early termination
+
 	err := t.setup(k, i)
 	if err != nil {
 		return err
@@ -46,10 +49,7 @@ func (t *Test) Run(k io.Kapacitor, i io.Influxdb) error {
 	if err != nil {
 		return err
 	}
-	err = t.teardown(k, i)
-	if err != nil {
-		return err
-	}
+
 	return nil
 }
 
@@ -132,20 +132,20 @@ func (t *Test) wait() {
 }
 
 // Deletes data, database and retention policies created to run the test
-func (t *Test) teardown(k io.Kapacitor, i io.Influxdb) error {
+func (t *Test) teardown(k io.Kapacitor, i io.Influxdb) {
 	glog.Info("DEBUG:: teardown test: ", t.Name)
 	switch t.Type {
 	case "batch":
 		err := i.CleanUp(t.Db)
 		if err != nil {
-			return err
+			glog.Error("Error performing teardown in cleanup. error: ", err)
 		}
 	}
 	err := k.Delete(t.TaskName)
 	if err != nil {
-		return err
+		glog.Error("Error performing teardown in delete error: ", err)
 	}
-	return nil
+
 }
 
 // Fetches status of kapacitor task, stores it and compares expected test result

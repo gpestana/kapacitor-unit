@@ -146,6 +146,6 @@ func renderWelcome() string {
 	logo[5] = " |_|\\_\\__,_| .__/ \\__,_|\\___|_|\\__\\___/|_|          \\__,_|_| |_|_|\\__| "
 	logo[6] = "           | |                                                                 "
 	logo[7] = "           |_|                                                        		      "
-	logo[8] = "The unit test framework for TICK scripts (v0.8)\n"
+	logo[8] = "The unit test framework for TICK scripts (v0.9)\n"
 	return strings.Join(logo, "\n")
 }
