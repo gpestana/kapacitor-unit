@@ -33,12 +33,17 @@ In order for all features to be supported, the Kapacitor version running the tes
 ## Running kapacitor-unit:
 
 
-1) Install kapacitor-unit
+1) Install kapacitor-unit and run
 
 ```
-go get github.com/gpestana/kapacitor-unit
-go install github.com/gpestana/kapacitor-unit
-````
+ $ make install
+ $ make build
+
+ $ make run  	# same as ./cmd/kapacitor-unit/kapacitor-unit
+```
+
+You can add `./cmd/kapacitor-unit/kapacitor-unit` to your `$PATH` so you can
+easily call the `kapacitor-unit` executable  anywhere.
 
 2) Define the test configuration file (see below) 
 
