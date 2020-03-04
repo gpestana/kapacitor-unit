@@ -1,4 +1,4 @@
-module github.com/gpestana/kapacitor-unit
+module github.com/DreadPirateShawn/kapacitor-unit
 
 go 1.12
 

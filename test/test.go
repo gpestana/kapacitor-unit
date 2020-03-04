@@ -6,8 +6,8 @@ package test
 import (
 	"fmt"
 	"github.com/golang/glog"
-	"github.com/gpestana/kapacitor-unit/io"
-	"github.com/gpestana/kapacitor-unit/task"
+	"github.com/DreadPirateShawn/kapacitor-unit/io"
+	"github.com/DreadPirateShawn/kapacitor-unit/task"
 	"time"
 	"regexp"
 )

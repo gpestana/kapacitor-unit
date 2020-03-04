@@ -2,7 +2,7 @@
 
 **A test framework for TICKscripts**
 
-[![Build Status](https://travis-ci.org/gpestana/kapacitor-unit.svg?branch=master)](https://travis-ci.org/gpestana/kapacitor-unit) ![Release Version](https://img.shields.io/badge/release-0.8-blue.svg)
+[![Build Status](https://travis-ci.org/DreadPirateShawn/kapacitor-unit.svg?branch=master)](https://travis-ci.org/DreadPirateShawn/kapacitor-unit) ![Release Version](https://img.shields.io/badge/release-0.8-blue.svg)
 
 
 Kapacitor-unit is a testing framework to make TICK scripts testing easy and
