@@ -19,14 +19,16 @@ func New(n string, p string) (*Task, error) {
 		Name: n,
 		Path: p}
 
-	if !strings.HasSuffix(p, "/") {
-		p = p + "/"
-	}
+	if p != "" {
+		if !strings.HasSuffix(p, "/") {
+			p = p + "/"
+		}
 
-	s, err := ioutil.ReadFile(p + n)
-	if err != nil {
-		return nil, err
+		s, err := ioutil.ReadFile(p + n)
+		if err != nil {
+			return nil, err
+		}
+		task.Script = string(s[:])
 	}
-	task.Script = string(s[:])
 	return &task, nil
 }

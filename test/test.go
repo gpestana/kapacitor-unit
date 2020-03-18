@@ -23,6 +23,7 @@ type Test struct {
 	Rp       string
 	Type     string
 	Task     task.Task
+	Clock    string `yaml:"clock"`
 }
 
 func NewTest() Test {
@@ -40,9 +41,19 @@ func (t *Test) Run(k io.Kapacitor, i io.Influxdb) error {
 	if err != nil {
 		return err
 	}
-	err = t.addData(k, i)
-	if err != nil {
-		return err
+	if t.RecId == "" {
+		glog.Info("DEBUG:: Add Data ")
+		err = t.addData(k, i)
+		if err != nil {
+			return err
+		}
+	} else {
+		// replay RecId
+		glog.Info("DEBUG:: Replay Id: ", t.RecId)
+		err = t.replay(k, i)
+		if err != nil {
+			return err
+		}
 	}
 	t.wait()
 	err = t.results(k)
@@ -66,7 +77,7 @@ func (t *Test) addData(k io.Kapacitor, i io.Influxdb) error {
 	switch t.Type {
 	case "stream":
 		// adds data to kapacitor
-		err := k.Data(t.Data, t.Db, t.Rp)
+		err := k.Data(t.Data, t.Db, t.Rp, t.Clock)
 		if err != nil {
 			return err
 		}
@@ -76,6 +87,21 @@ func (t *Test) addData(k io.Kapacitor, i io.Influxdb) error {
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+// Replay recording
+func (t *Test) replay(k io.Kapacitor, i io.Influxdb) error {
+	// Replay a recoring
+	f := map[string]interface{}{
+		"task":      t.TaskName,
+		"recording": t.RecId,
+		"clock":     t.Clock,
+	}
+	err := k.Replay(f)
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -108,6 +134,7 @@ func (t *Test) setup(k io.Kapacitor, i io.Influxdb) error {
 		"type":   t.Type,
 		"script": t.Task.Script,
 		"status": "enabled",
+                "record_id": t.RecId,
 	}
 
 	dbrp, _ := regexp.MatchString(`(?m:^dbrp \"\w+\"\.\"\w+\"$)`, t.Task.Script)
@@ -115,9 +142,35 @@ func (t *Test) setup(k io.Kapacitor, i io.Influxdb) error {
 		f["dbrps"] = []map[string]string{{"db": t.Db, "rp": t.Rp}}
 	}
 
-	err := k.Load(f)
-	if err != nil {
-		return err
+	if t.Task.Path != "" {
+		err := k.Load(f)
+		if err != nil {
+			return err
+		}
+	} else {
+		// Ensure alerts w/ stateChangeOnly are in OK
+		err := k.ClearTopics()
+		if err != nil {
+			glog.Error("Error performing teardown in deleting topics: ", err)
+		}
+		// Reset task's node-stats
+		f := map[string]interface{}{
+			"id":     t.TaskName,
+			"status": "disabled",
+		}
+		err = k.ModifyTasks(f)
+		if err != nil {
+			return err
+		}
+		f = map[string]interface{}{
+			"id":     t.TaskName,
+			"status": "enabled",
+		}
+		err = k.ModifyTasks(f)
+		if err != nil {
+			return err
+		}
+
 	}
 	return nil
 }
@@ -141,9 +194,12 @@ func (t *Test) teardown(k io.Kapacitor, i io.Influxdb) {
 			glog.Error("Error performing teardown in cleanup. error: ", err)
 		}
 	}
-	err := k.Delete(t.TaskName)
-	if err != nil {
-		glog.Error("Error performing teardown in delete error: ", err)
+	// Do not delete when resusing existing task
+	if t.Task.Path != "" {
+		err := k.Delete(t.TaskName)
+		if err != nil {
+			glog.Error("Error performing teardown in delete error: ", err)
+		}
 	}
 
 }

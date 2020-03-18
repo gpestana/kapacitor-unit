@@ -11,7 +11,7 @@ build-cmd:
 	go build cmd/kapacitor-unit/main.go 
 
 run:
-	./cmd/kapacitor-unit/kapacitor-unit
+	./main
 
 start-kapacitor:
 	docker-compose -f infra/docker-compose.yml up -d
