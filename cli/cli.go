@@ -28,10 +28,6 @@ func (c *Config) Validate() {
 	if c.TestsPath == "" {
 		log.Fatal("ERROR: Path for tests definitions (--tests) must be defined")
 	}
-
-	if c.ScriptsDir == "" {
-		log.Fatal("ERROR: Path for where TICKscripts directory (--dir) must be defined")
-	}
 }
 
 // Loads env variables first than overrides with flags if provided

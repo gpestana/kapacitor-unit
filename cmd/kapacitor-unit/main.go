@@ -35,6 +35,8 @@ func main() {
 
 	// Validates, runs tests in series and print results
 	for _, t := range tests {
+		log.Println("Running Test Name: ", t.Name)
+
 		if err := t.Validate(); err != nil {
 			log.Println(err)
 			continue

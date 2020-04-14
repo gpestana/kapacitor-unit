@@ -37,7 +37,7 @@ In order for all features to be supported, the Kapacitor version running the tes
 
 ```
  $ make install
- $ make build
+ $ make build-cmd
 
  $ make run  	# same as ./cmd/kapacitor-unit/kapacitor-unit
 ```
