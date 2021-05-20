@@ -18,9 +18,12 @@ import (
 type TestCollection []test.Test
 
 func main() {
-	fmt.Println(renderWelcome())
+	
 
 	f := cli.Load()
+	if !f.NoBanner {
+		fmt.Println(renderWelcome())
+	}
 	kapacitor := io.NewKapacitor(f.KapacitorHost)
 	influxdb := io.NewInfluxdb(f.InfluxdbHost)
 
@@ -134,6 +137,7 @@ func initTests(c TestCollection, p string) error {
 			return err
 		}
 		c[i].Task = *tk
+
 	}
 	return nil
 }
