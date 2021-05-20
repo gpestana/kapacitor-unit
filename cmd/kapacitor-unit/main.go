@@ -126,8 +126,27 @@ func testConfig(fileName string) (TestCollection, error) {
 		tests = append(tests, fileTests...)
 	}
 
+	for i, t := range tests {
+		fmt.Println(t.DataPath)
+		if t.DataPath != "" {
+			fmt.Println("Loading data from file")
+			var data []string
+			b, err := ioutil.ReadFile(t.DataPath)
+			if err != nil {
+				return nil, err
+			}
+			err = yaml.Unmarshal(b, &data)
+			if err !=  nil{
+				fmt.Println("Unmarshal error")
+				 return nil, err
+			}
+			tests[i].Data = data
+		}
+	}
+
 	return tests, nil
 }
+
 
 //Populates each of Test in Configuration struct with an initialized Task
 func initTests(c TestCollection, p string) error {

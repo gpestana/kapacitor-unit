@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"github.com/golang/glog"
 	"net/http"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // Influxdb service configurations
@@ -20,9 +23,37 @@ func NewInfluxdb(host string) Influxdb {
 }
 
 // Adds test data to influxdb
-func (influxdb Influxdb) Data(data []string, db string, rp string) error {
-	url := influxdb.Host + influxdb_write + "db=" + db + "&rp=" + rp
+func (influxdb Influxdb) Data(data []string, db string, rp string, precision string, shift string, offset_unit string) error {
+	if precision == "" {
+		precision = "ns"
+	}
+	
+	url := influxdb.Host + influxdb_write + "db=" + db + "&rp=" + rp + "&precision=" + precision
+	now := time.Now()
+	if shift != "" {
+		shiftDuration, _ := time.ParseDuration(shift)
+		now = now.Add(shiftDuration)
+	}
+
 	for _, d := range data {
+		if shift != "" {
+			line := strings.Split(d, " ")
+			curTime, _ := time.ParseDuration(line[2] + offset_unit)
+			actualTime := now.Add(curTime)
+			t := actualTime.UnixNano()
+			if precision == "us" {
+				t = t / 1e+3;
+			}
+			if precision == "ms" {
+				t = t / 1e+6
+			}
+			if precision == "s" {
+				t = t / 1e+9
+			}
+			line[2] = strconv.FormatInt(t, 10)
+			d = strings.Join(line, " ")
+		}
+		
 		_, err := influxdb.Client.Post(url, "application/x-www-form-urlencoded",
 			bytes.NewBuffer([]byte(d)))
 		if err != nil {
@@ -40,7 +71,7 @@ func (influxdb Influxdb) Setup(db string, rp string) error {
 	if rp == "" {
 		rp = "autogen"
 	}
-	q := "q=CREATE DATABASE \""+db+"\" WITH DURATION 1h REPLICATION 1 NAME \""+rp+"\""
+	q := "q=CREATE DATABASE \""+db+"\" WITH REPLICATION 1 NAME \""+rp+"\""
 	baseUrl := influxdb.Host + "/query"
 	_, err := influxdb.Client.Post(baseUrl, "application/x-www-form-urlencoded",
 		bytes.NewBuffer([]byte(q)))
