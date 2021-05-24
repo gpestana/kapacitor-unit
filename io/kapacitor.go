@@ -127,10 +127,14 @@ func (k Kapacitor) Delete(id string) error {
 }
 
 // Adds test data to kapacitor
-func (k Kapacitor) Data(data []string, db string, rp string, clock string) error {
-	u := k.Host + kapacitor_write + "db=" + db + "&rp=" + rp
+func (k Kapacitor) Data(data []string, db string, rp string, precision string, clock string, offset_unit string) error {
+	if precision == "" {
+		precision = "ns"
+	}
+	u := k.Host + kapacitor_write + "db=" + db + "&rp=" + rp + "&precision=" + precision
 	delay := 0
 	prevTime := 9223372036854775806 //max valid timestamp
+	prevSleep := time.Duration(0)*time.Nanosecond
 	for _, d := range data {
 		if clock == "real" {
 			line := strings.Split(d, " ")
@@ -140,6 +144,14 @@ func (k Kapacitor) Data(data []string, db string, rp string, clock string) error
 			glog.Info("DEBUG:: sleep: ", time.Duration(delay))
 			time.Sleep(time.Duration(delay) * time.Nanosecond)
 			prevTime = curTime
+		}
+		if clock == "offset" {
+			line := strings.Split(d, " ")
+			curTime, _ := time.ParseDuration(line[2] + offset_unit)
+			sleepTime := curTime - prevSleep
+			prevSleep = curTime
+			glog.Info("DEBUG:: sleep: ", sleepTime)
+			time.Sleep(sleepTime)
 		}
 		_, err := k.Client.Post(u, "application/x-www-form-urlencoded",
 			bytes.NewBuffer([]byte(d)))

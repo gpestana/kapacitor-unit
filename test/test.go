@@ -8,22 +8,28 @@ import (
 	"github.com/golang/glog"
 	"github.com/gpestana/kapacitor-unit/io"
 	"github.com/gpestana/kapacitor-unit/task"
-	"time"
 	"regexp"
+	"time"
 )
 
 type Test struct {
-	Name     string
-	TaskName string `yaml:"task_name,omitempty"`
-	Data     []string
-	RecId    string `yaml:"recording_id"`
-	Expects  Result
-	Result   Result
-	Db       string
-	Rp       string
-	Type     string
-	Task     task.Task
-	Clock    string `yaml:"clock"`
+	Name       string
+	TaskName   string `yaml:"task_name,omitempty"`
+	Data       []string
+	DataPath   string `yaml:"data_path"`
+	RecId      string `yaml:"recording_id"`
+	Expects    Result
+	Result     Result
+	Db         string
+	Rp         string
+	Precision  string
+	Type       string
+	Task       task.Task
+	Clock      string `yaml:"clock"`
+	OffsetUnit string `yaml:"offset_unit"`
+	ResetTopics bool `yaml:"reset_topics"`
+	Shift 	   string `yaml:"shift"`
+
 }
 
 func NewTest() Test {
@@ -77,13 +83,13 @@ func (t *Test) addData(k io.Kapacitor, i io.Influxdb) error {
 	switch t.Type {
 	case "stream":
 		// adds data to kapacitor
-		err := k.Data(t.Data, t.Db, t.Rp, t.Clock)
+		err := k.Data(t.Data, t.Db, t.Rp, t.Precision, t.Clock, t.OffsetUnit)
 		if err != nil {
 			return err
 		}
 	case "batch":
 		// adds data to InfluxDb
-		err := i.Data(t.Data, t.Db, t.Rp)
+		err := i.Data(t.Data, t.Db, t.Rp, t.Precision, t.Shift, t.OffsetUnit)
 		if err != nil {
 			return err
 		}
@@ -130,16 +136,24 @@ func (t *Test) setup(k io.Kapacitor, i io.Influxdb) error {
 
 	// Loads test task to kapacitor
 	f := map[string]interface{}{
-		"id":     t.TaskName,
-		"type":   t.Type,
-		"script": t.Task.Script,
-		"status": "enabled",
-                "record_id": t.RecId,
+		"id":        t.TaskName,
+		"type":      t.Type,
+		"script":    t.Task.Script,
+		"status":    "enabled",
+		"record_id": t.RecId,
 	}
-
 	dbrp, _ := regexp.MatchString(`(?m:^dbrp \"\w+\"\.\"\w+\"$)`, t.Task.Script)
 	if !dbrp {
 		f["dbrps"] = []map[string]string{{"db": t.Db, "rp": t.Rp}}
+	}
+
+	if t.ResetTopics == true {
+		glog.Info("Resetting topics...")
+		// Ensure alerts w/ stateChangeOnly are in OK
+		err := k.ClearTopics()
+		if err != nil {
+			glog.Error("Error performing teardown in deleting topics: ", err)
+		}
 	}
 
 	if t.Task.Path != "" {

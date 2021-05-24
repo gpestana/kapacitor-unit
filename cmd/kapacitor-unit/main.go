@@ -18,9 +18,12 @@ import (
 type TestCollection []test.Test
 
 func main() {
-	fmt.Println(renderWelcome())
+	
 
 	f := cli.Load()
+	if !f.NoBanner {
+		fmt.Println(renderWelcome())
+	}
 	kapacitor := io.NewKapacitor(f.KapacitorHost)
 	influxdb := io.NewInfluxdb(f.InfluxdbHost)
 
@@ -123,8 +126,27 @@ func testConfig(fileName string) (TestCollection, error) {
 		tests = append(tests, fileTests...)
 	}
 
+	for i, t := range tests {
+		fmt.Println(t.DataPath)
+		if t.DataPath != "" {
+			fmt.Println("Loading data from file")
+			var data []string
+			b, err := ioutil.ReadFile(t.DataPath)
+			if err != nil {
+				return nil, err
+			}
+			err = yaml.Unmarshal(b, &data)
+			if err !=  nil{
+				fmt.Println("Unmarshal error")
+				 return nil, err
+			}
+			tests[i].Data = data
+		}
+	}
+
 	return tests, nil
 }
+
 
 //Populates each of Test in Configuration struct with an initialized Task
 func initTests(c TestCollection, p string) error {
@@ -134,6 +156,7 @@ func initTests(c TestCollection, p string) error {
 			return err
 		}
 		c[i].Task = *tk
+
 	}
 	return nil
 }
