@@ -13,6 +13,7 @@ type Config struct {
 	ScriptsDir    string
 	InfluxdbHost  string
 	KapacitorHost string
+	NoBanner bool
 }
 
 func envOrDefault(env string, def string) string {
@@ -39,6 +40,7 @@ func Load() *Config {
 		ScriptsDir: envOrDefault("KU_SCRIPTS_DIR", ""),
 		InfluxdbHost: envOrDefault("KU_INFLUX_HOST", "http://localhost:8086"),
 		KapacitorHost: envOrDefault("KU_KAPACITOR_HOST", "http://localhost:9092"),
+		NoBanner: false,
 	}
 
 	influxdbHost := flag.String("influxdb", "",
@@ -47,8 +49,14 @@ func Load() *Config {
 		"Kapacitor host")
 	testsPath := flag.String("tests", "", "Tests definition file")
 	scriptsDir := flag.String("dir", "", "TICKscripts directory")
+	noBanner := flag.Bool("q", false, "Dont print banner on startup")
+	
+
 
 	flag.Parse()
+	if *noBanner == true {
+		conf.NoBanner = true
+	}
 
 	if *influxdbHost != "" {
 		conf.InfluxdbHost = *influxdbHost
